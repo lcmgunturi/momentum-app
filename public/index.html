@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Momentum — Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .glass-card { background: rgba(255,255,255,0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up { animation: fadeUp .35s ease both; }
+  .fade-up-1 { animation-delay: .05s; }
+  .fade-up-2 { animation-delay: .10s; }
+  .fade-up-3 { animation-delay: .15s; }
+</style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode:"class",
+    theme:{ extend:{
+      colors:{"tertiary-container":"#394543","on-tertiary-fixed-variant":"#3d4947","error":"#ba1a1a","on-primary-fixed-variant":"#3b35a7","surface":"#f8f9ff","inverse-primary":"#c3c0ff","on-error":"#ffffff","on-tertiary-fixed":"#121e1c","on-secondary-fixed-variant":"#005049","surface-tint":"#544fc0","on-surface-variant":"#464553","primary-fixed-dim":"#c3c0ff","primary-fixed":"#e2dfff","surface-container":"#e5eeff","background":"#f8f9ff","on-primary":"#ffffff","tertiary-fixed-dim":"#bcc9c6","inverse-surface":"#213145","outline-variant":"#c8c4d5","on-secondary-container":"#006f66","outline":"#777584","surface-dim":"#cbdbf5","secondary-container":"#86f2e4","secondary-fixed":"#89f5e7","surface-container-low":"#eff4ff","error-container":"#ffdad6","tertiary-fixed":"#d8e5e2","secondary-fixed-dim":"#6bd8cb","on-primary-container":"#a9a7ff","surface-container-lowest":"#ffffff","on-surface":"#0b1c30","surface-variant":"#d3e4fe","surface-container-highest":"#d3e4fe","on-background":"#0b1c30","on-error-container":"#93000a","secondary":"#006a61","primary":"#1f108e","tertiary":"#232f2d","surface-bright":"#f8f9ff","on-secondary":"#ffffff","surface-container-high":"#dce9ff","on-tertiary":"#ffffff","on-secondary-fixed":"#00201d","inverse-on-surface":"#eaf1ff","primary-container":"#3730a3","on-primary-fixed":"#0f0069","on-tertiary-container":"#a5b2af"},
+      borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","3xl":"1.5rem","full":"9999px"},
+      spacing:{"margin-mobile":"20px","xs":"4px","xl":"32px","lg":"24px","margin-desktop":"40px","gutter":"16px","sm":"8px","md":"16px","base":"4px"},
+      fontFamily:{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"headline-lg-mobile":["Plus Jakarta Sans"],"label-sm":["Inter"]},
+      fontSize:{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-md":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg-mobile":["28px",{"lineHeight":"36px","fontWeight":"700"}],"label-sm":["12px",{"lineHeight":"16px","fontWeight":"500"}]}
+    }}
+  }
+</script>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen">
+
+<!-- Top Nav -->
+<header class="fixed top-0 right-0 left-0 z-50 md:left-64 flex justify-between items-center px-5 md:px-10 h-14 bg-surface/90 backdrop-blur-sm border-b border-outline-variant/60">
+  <div class="flex items-center gap-sm">
+    <button id="mobile-menu-btn" class="md:hidden p-sm hover:bg-surface-container-high rounded-lg transition-colors">
+      <span class="material-symbols-outlined text-on-surface-variant">menu</span>
+    </button>
+    <div class="relative hidden sm:block">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+      <input id="search-input" class="pl-9 pr-4 py-[7px] bg-surface-container-low rounded-full border-none focus:ring-2 focus:ring-primary/20 w-56 text-sm outline-none" placeholder="Search goals…" type="text"/>
+    </div>
+  </div>
+  <div class="flex items-center gap-sm">
+    <span class="hidden sm:flex items-center gap-xs text-label-sm text-on-surface-variant px-3 py-[6px] bg-surface-container rounded-full">
+      <span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings:'FILL' 1;">calendar_today</span>
+      <span id="date-text" class="font-medium"></span>
+    </span>
+    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-sm select-none">M</div>
+  </div>
+</header>
+
+<!-- Side Nav -->
+<aside id="sidebar" class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant/60 py-lg z-50">
+  <div id="sidebar-content"></div>
+</aside>
+
+<!-- Mobile overlay + drawer -->
+<div id="mobile-overlay" class="fixed inset-0 bg-on-surface/30 backdrop-blur-sm z-40 hidden" onclick="closeMobileNav()"></div>
+<aside id="mobile-sidebar" class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant flex flex-col py-lg z-50 transform -translate-x-full transition-transform duration-300">
+  <div id="mobile-sidebar-content"></div>
+</aside>
+
+<!-- Main -->
+<main class="pt-14 md:pl-64 min-h-screen">
+  <div class="p-5 md:p-10 max-w-[1200px] mx-auto space-y-6">
+
+    <!-- ① Page header -->
+    <div class="flex items-end justify-between">
+      <div>
+        <h2 class="font-headline-lg text-headline-lg text-on-surface">Good morning</h2>
+        <p id="streak-text" class="text-on-surface-variant text-base mt-[2px]">Loading…</p>
+      </div>
+      <a href="/new-goal.html" class="hidden md:flex items-center gap-xs bg-primary text-on-primary px-lg py-[9px] rounded-xl font-label-md text-[13px] hover:brightness-110 active:scale-[0.98] transition-all shadow-sm">
+        <span class="material-symbols-outlined text-[17px]">add</span> New Goal
+      </a>
+    </div>
+
+    <!-- ② Today's Focus (most at-risk goal) -->
+    <section id="focus-section" class="fade-up fade-up-1 hidden rounded-2xl overflow-hidden border border-primary/20 bg-gradient-to-r from-primary/6 via-surface to-surface">
+      <div class="flex items-center justify-between gap-lg p-5">
+        <div class="flex items-center gap-md min-w-0">
+          <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <span id="focus-icon" class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">bolt</span>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-semibold text-primary uppercase tracking-widest mb-[2px]">Today's Focus</p>
+            <p id="focus-title" class="font-semibold text-on-surface text-base leading-snug truncate">—</p>
+            <p id="focus-meta"  class="text-xs text-on-surface-variant mt-[1px]">—</p>
+          </div>
+        </div>
+        <a id="focus-cta" href="#" class="shrink-0 bg-primary text-on-primary px-5 py-[9px] rounded-xl font-label-md text-sm hover:brightness-110 active:scale-[0.98] transition-all whitespace-nowrap">
+          Work on it →
+        </a>
+      </div>
+    </section>
+
+    <!-- ③ Stats bar -->
+    <div id="stats-bar" class="fade-up fade-up-1 grid grid-cols-2 md:grid-cols-4 gap-3">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- ④ Top grid: streak + ring -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+      <!-- Streak tracker -->
+      <section class="fade-up fade-up-2 lg:col-span-8 glass-card border border-outline-variant/50 rounded-2xl p-lg shadow-sm">
+        <div class="flex justify-between items-center mb-md">
+          <h3 class="font-semibold text-base text-on-surface">Daily Consistency</h3>
+          <div class="flex items-center gap-xs text-secondary font-bold text-sm">
+            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">local_fire_department</span>
+            <span id="streak-badge">0 Days</span>
+          </div>
+        </div>
+        <div id="streak-dots" class="flex items-center justify-between gap-2 py-2"></div>
+      </section>
+
+      <!-- Overall ring -->
+      <section class="fade-up fade-up-2 lg:col-span-4 bg-primary text-on-primary rounded-2xl p-lg shadow-lg relative overflow-hidden">
+        <div class="relative z-10 flex flex-col h-full justify-between">
+          <div>
+            <h3 class="font-semibold text-base mb-[2px]">Active Goals</h3>
+            <p id="goals-summary" class="text-on-primary-container text-sm">—</p>
+          </div>
+          <div class="flex justify-center my-md">
+            <div class="relative w-24 h-24">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                <circle class="stroke-primary-container" cx="18" cy="18" fill="none" r="15" stroke-width="3"/>
+                <circle id="progress-ring" class="stroke-on-primary" cx="18" cy="18" fill="none" r="15"
+                  stroke-dasharray="0, 100" stroke-linecap="round" stroke-width="3"
+                  style="transition:stroke-dasharray 1s ease;"/>
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center flex-col">
+                <span id="overall-pct" class="text-xl font-bold leading-none">0%</span>
+                <span class="text-[10px] uppercase tracking-widest opacity-70 mt-[2px]">Overall</span>
+              </div>
+            </div>
+          </div>
+          <a href="/analytics.html" class="w-full py-[9px] bg-on-primary text-primary rounded-xl font-label-md text-sm hover:bg-primary-fixed transition-colors text-center block">View Reports</a>
+        </div>
+        <div class="absolute -bottom-8 -right-8 w-36 h-36 bg-on-primary-container rounded-full opacity-10 pointer-events-none"></div>
+      </section>
+    </div>
+
+    <!-- ⑤ Goals + sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+      <!-- Goals list -->
+      <div class="lg:col-span-2 space-y-3">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="font-semibold text-base text-on-surface">Active Goals</h3>
+          <a href="/goals.html" class="text-sm text-primary hover:underline font-medium">See all</a>
+        </div>
+        <div id="goals-list" class="space-y-3">
+          <div class="flex items-center gap-sm py-lg text-on-surface-variant text-sm">
+            <span class="material-symbols-outlined animate-spin text-[18px]">refresh</span> Loading…
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="space-y-5">
+
+        <!-- Upcoming milestones -->
+        <section class="bg-surface border border-outline-variant/60 rounded-2xl overflow-hidden shadow-sm">
+          <div class="px-md py-sm bg-surface-container-low border-b border-outline-variant/60 flex items-center justify-between">
+            <h3 class="font-semibold text-[13px] text-on-surface">Upcoming Milestones</h3>
+            <a href="/goals.html" class="text-primary text-xs font-medium hover:underline">See all</a>
+          </div>
+          <div id="milestones-list" class="divide-y divide-outline-variant/50">
+            <div class="px-md py-sm text-on-surface-variant text-xs">Loading…</div>
+          </div>
+        </section>
+
+        <!-- Recent wins -->
+        <section>
+          <h3 class="font-semibold text-base text-on-surface mb-3 px-1">Recent Wins</h3>
+          <div id="wins-list" class="space-y-3">
+            <div class="text-on-surface-variant text-xs px-1">Loading…</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="pt-6 border-t border-outline-variant/50 text-center">
+      <p class="text-xs text-on-surface-variant/60">© 2024 Momentum Goal Tracker</p>
+    </footer>
+  </div>
+</main>
+
+<!-- Mobile FAB -->
+<a href="/new-goal.html" class="fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50 md:hidden">
+  <span class="material-symbols-outlined text-2xl">add</span>
+</a>
+
+<script src="/js/api.js"></script>
+<script>
+  // ── Bootstrap ──────────────────────────────────────────────────────────────
+  document.getElementById('sidebar-content').innerHTML = sidebarHTML('dashboard');
+  document.getElementById('mobile-sidebar-content').innerHTML = sidebarHTML('dashboard');
+  document.getElementById('date-text').textContent = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+
+  // Mobile nav
+  document.getElementById('mobile-menu-btn').onclick = () => {
+    document.getElementById('mobile-sidebar').classList.remove('-translate-x-full');
+    document.getElementById('mobile-overlay').classList.remove('hidden');
+  };
+  function closeMobileNav() {
+    document.getElementById('mobile-sidebar').classList.add('-translate-x-full');
+    document.getElementById('mobile-overlay').classList.add('hidden');
+  }
+
+  // Search filter
+  document.getElementById('search-input').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('[data-goal-id]').forEach(card => {
+      const title = (card.dataset.goalTitle || '').toLowerCase();
+      card.style.display = title.includes(q) ? '' : 'none';
+    });
+  });
+
+  // ── Stat card ──────────────────────────────────────────────────────────────
+  function statCard(icon, value, label, color) {
+    return `<div class="bg-white border border-outline-variant/50 rounded-2xl px-md py-sm flex items-center gap-md shadow-sm">
+      <div class="w-9 h-9 rounded-xl ${color} flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">${icon}</span>
+      </div>
+      <div>
+        <p class="font-bold text-lg text-on-surface leading-none">${value}</p>
+        <p class="text-[11px] text-on-surface-variant mt-[2px]">${label}</p>
+      </div>
+    </div>`;
+  }
+
+  // ── Goal card with quick-log ──────────────────────────────────────────────
+  function goalCard(g) {
+    const cc   = categoryColors[g.category] || categoryColors.Other;
+    const acc  = categoryAccent[g.category] || categoryAccent.Other;
+    const bar  = progressColor(g.progress_pct);
+    const st   = goalStatus(g);
+    const dl   = daysLeftLabel(g.target_date);
+    const incs = quickIncrements(g.unit, g.target_value);
+
+    const incBtns = incs.map(n =>
+      `<button onclick="quickLog(event,${g.id},${n},'${g.unit || ''}',${g.target_value})"
+        class="px-3 py-1 text-xs font-semibold rounded-full bg-surface-container hover:bg-secondary-container hover:text-on-secondary-container transition-colors border border-outline-variant/60">
+        +${n} ${g.unit || ''}
+      </button>`).join('');
+
+    return `<div data-goal-id="${g.id}" data-goal-title="${g.title}"
+      class="bg-white ${acc} rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group">
+      <a href="/goal-detail.html?id=${g.id}" class="block p-md pb-sm">
+        <div class="flex items-start justify-between gap-sm mb-sm">
+          <div class="flex items-center gap-sm min-w-0">
+            <div class="w-9 h-9 ${cc.bg} ${cc.text} rounded-xl flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[18px]">${g.icon || categoryIcons[g.category] || 'flag'}</span>
+            </div>
+            <div class="min-w-0">
+              <p class="font-semibold text-on-surface text-sm leading-snug truncate group-hover:text-primary transition-colors">${g.title}</p>
+              <p class="text-[11px] text-on-surface-variant truncate">${g.description || g.category}</p>
+            </div>
+          </div>
+          <span class="text-[11px] font-semibold px-2 py-[3px] rounded-full shrink-0 ${st.classes}">${st.label}</span>
+        </div>
+
+        <!-- Progress -->
+        <div class="space-y-[6px] mt-sm">
+          <div class="flex justify-between text-[12px]">
+            <span class="text-on-surface-variant">${g.current_value} / ${g.target_value} <span class="opacity-70">${g.unit || ''}</span></span>
+            <span class="font-bold text-on-surface">${g.progress_pct}%</span>
+          </div>
+          <div class="w-full bg-surface-container-high h-[6px] rounded-full overflow-hidden">
+            <div class="${bar} h-full rounded-full transition-all duration-700" style="width:${g.progress_pct}%"></div>
+          </div>
+          ${dl ? `<p class="text-[11px] text-on-surface-variant">${dl}</p>` : ''}
+        </div>
+      </a>
+
+      <!-- Quick-log strip -->
+      <div class="px-md pb-md flex items-center gap-2 flex-wrap pt-sm border-t border-outline-variant/40 mt-sm">
+        <span class="text-[11px] text-on-surface-variant mr-1">Log today:</span>
+        ${incBtns}
+        <a href="/goal-detail.html?id=${g.id}" class="ml-auto text-xs text-primary font-medium hover:underline flex items-center gap-[2px]">
+          Details <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+        </a>
+      </div>
+    </div>`;
+  }
+
+  // Quick log from dashboard card
+  async function quickLog(event, goalId, increment, unit, targetValue) {
+    event.preventDefault();
+    event.stopPropagation();
+    const btn = event.currentTarget;
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await API.post(`/api/goals/${goalId}/progress`, { date: today, value: increment });
+      // Also update current_value
+      const goal = await API.get(`/api/goals/${goalId}`);
+      const newVal = Math.min(targetValue, goal.current_value + increment);
+      await API.put(`/api/goals/${goalId}`, { current_value: newVal });
+      showToast(`+${increment} ${unit} logged!`);
+      loadDashboard();
+    } catch(e) {
+      showToast('Failed to log', 'error');
+      btn.disabled = false;
+      btn.textContent = `+${increment} ${unit}`;
+    }
+  }
+
+  // ── Load dashboard ─────────────────────────────────────────────────────────
+  async function loadDashboard() {
+    const data = await API.get('/api/analytics/overview');
+
+    // Streak
+    const s = data.streak;
+    document.getElementById('streak-text').textContent =
+      s > 0 ? `You're on a ${s}-day streak. Keep the rhythm going.`
+             : 'Track your first goal today to start a streak.';
+    document.getElementById('streak-badge').textContent = `${s} Day${s !== 1 ? 's' : ''}`;
+
+    // Progress ring
+    const pct = data.overallProgress;
+    document.getElementById('overall-pct').textContent = pct + '%';
+    document.getElementById('progress-ring').setAttribute('stroke-dasharray', `${pct}, 100`);
+    document.getElementById('goals-summary').textContent = `${data.onTrack} on track · ${data.lagging} lagging`;
+
+    // Stats bar
+    document.getElementById('stats-bar').innerHTML = [
+      statCard('local_fire_department', s, 'Day streak',      'bg-secondary/15 text-secondary'),
+      statCard('target',               data.totalGoals, 'Active goals', 'bg-primary/10 text-primary'),
+      statCard('check_circle',         data.taskCompletionRate+'%', 'Tasks done', 'bg-secondary/15 text-secondary'),
+      statCard('trending_up',          pct+'%', 'Avg progress',  'bg-primary/10 text-primary'),
+    ].join('');
+
+    // Today's Focus — most at-risk: lowest pct with a deadline
+    const atRisk = data.goals
+      .filter(g => g.target_date && g.progress_pct < 100)
+      .sort((a, b) => {
+        const dA = Math.ceil((new Date(a.target_date) - new Date()) / 86400000);
+        const dB = Math.ceil((new Date(b.target_date) - new Date()) / 86400000);
+        // score: penalise low progress + close deadline
+        return (a.progress_pct / Math.max(1, dA)) - (b.progress_pct / Math.max(1, dB));
+      })[0];
+
+    const focusSec = document.getElementById('focus-section');
+    if (atRisk) {
+      document.getElementById('focus-icon').textContent = atRisk.icon || categoryIcons[atRisk.category] || 'flag';
+      document.getElementById('focus-title').textContent = atRisk.title;
+      const dl = daysLeftLabel(atRisk.target_date);
+      document.getElementById('focus-meta').textContent = `${atRisk.progress_pct}% complete${dl ? ' · ' + dl : ''}`;
+      document.getElementById('focus-cta').href = `/goal-detail.html?id=${atRisk.id}`;
+      focusSec.classList.remove('hidden');
+    }
+
+    // Streak dots (Mon–Sun this week)
+    const heatmap = await API.get('/api/analytics/heatmap?days=7');
+    const activeDates = new Set(heatmap.filter(h => h.active_goals > 0).map(h => h.date));
+    const dayLabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const today = new Date();
+    const dotsEl = document.getElementById('streak-dots');
+    dotsEl.innerHTML = Array.from({length:7}).map((_, i) => {
+      const d = new Date(today); d.setDate(today.getDate() - (6 - i));
+      const dateStr = d.toISOString().split('T')[0];
+      const label   = dayLabels[d.getDay() === 0 ? 6 : d.getDay() - 1];
+      const isToday = i === 6;
+      const done    = activeDates.has(dateStr);
+
+      let dot;
+      if (done) {
+        dot = `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+          <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check</span></div>`;
+      } else if (isToday) {
+        dot = `<div class="w-10 h-10 rounded-full border-2 border-primary border-dashed flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-sm">more_horiz</span></div>`;
+      } else {
+        dot = `<div class="w-10 h-10 rounded-full border-2 border-outline-variant/60"></div>`;
+      }
+      return `<div class="flex flex-col items-center gap-[6px]">
+        <span class="text-[11px] font-medium text-on-surface-variant">${label}</span>${dot}</div>`;
+    }).join('');
+
+    // Goals list
+    const listEl = document.getElementById('goals-list');
+    if (!data.goals.length) {
+      listEl.innerHTML = `<div class="text-center py-10 border-2 border-dashed border-outline-variant/60 rounded-2xl">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant/40 block mb-3">flag</span>
+        <p class="font-semibold text-on-surface-variant mb-1">No goals yet</p>
+        <p class="text-sm text-on-surface-variant/60 mb-4">Set your first goal and start tracking progress.</p>
+        <a href="/new-goal.html" class="inline-block bg-primary text-on-primary px-6 py-2 rounded-xl font-label-md text-sm">Create a Goal</a>
+      </div>`;
+    } else {
+      listEl.innerHTML = data.goals.map(goalCard).join('');
+    }
+
+    // Milestones
+    const allMs = [];
+    for (const g of data.goals) {
+      const ms = await API.get(`/api/goals/${g.id}/milestones`);
+      ms.filter(m => !m.completed).forEach(m => allMs.push({...m, goalTitle: g.title}));
+    }
+    const mEl = document.getElementById('milestones-list');
+    mEl.innerHTML = !allMs.length
+      ? '<div class="px-md py-sm text-on-surface-variant text-xs">No upcoming milestones.</div>'
+      : allMs.slice(0, 4).map((m, i) => {
+          const colors = ['bg-error','bg-secondary','bg-outline','bg-primary'];
+          return `<div class="px-md py-[10px] flex gap-sm items-start">
+            <div class="mt-1 w-[7px] h-[7px] rounded-full ${colors[i % colors.length]} shrink-0"></div>
+            <div>
+              <p class="text-[13px] font-medium text-on-surface leading-snug">${m.title}</p>
+              <p class="text-[11px] text-on-surface-variant">${m.target_date ? formatDate(m.target_date) : m.goalTitle}</p>
+            </div>
+          </div>`;
+        }).join('');
+
+    // Wins
+    const winsEl = document.getElementById('wins-list');
+    winsEl.innerHTML = !data.wins.length
+      ? '<div class="text-on-surface-variant text-xs px-1">Complete tasks to earn wins!</div>'
+      : data.wins.map(w => `
+        <div class="flex gap-sm">
+          <div class="shrink-0 w-8 h-8 ${w.icon_bg} flex items-center justify-center rounded-full ${w.icon_color}">
+            <span class="material-symbols-outlined text-[15px]" style="font-variation-settings:'FILL' 1;">${w.icon}</span>
+          </div>
+          <div class="bg-surface-container px-md py-[8px] rounded-xl rounded-tl-none flex-1">
+            <p class="text-[13px] font-medium text-on-surface leading-snug">${w.message}</p>
+            <p class="text-[11px] text-on-surface-variant mt-[2px]">${timeAgo(w.created_at)}</p>
+          </div>
+        </div>`).join('');
+  }
+
+  loadDashboard().catch(console.error);
+</script>
+</body>
+</html>

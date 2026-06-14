@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analytics | Momentum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  .heatmap-cell { width:13px; height:13px; border-radius:3px; transition:transform .15s ease; cursor:default; }
+  .heatmap-cell:hover { transform:scale(1.4); z-index:10; }
+  @keyframes growBar { from{width:0} to{width:var(--w)} }
+  .bar-anim { animation: growBar .7s ease-out forwards; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .fade-up { animation: fadeUp .35s ease forwards; opacity: 0; }
+</style>
+<script id="tailwind-config">
+  tailwind.config={darkMode:"class",theme:{extend:{
+    colors:{"tertiary-container":"#394543","on-tertiary-fixed-variant":"#3d4947","error":"#ba1a1a","on-primary-fixed-variant":"#3b35a7","surface":"#f8f9ff","inverse-primary":"#c3c0ff","on-error":"#ffffff","on-tertiary-fixed":"#121e1c","on-secondary-fixed-variant":"#005049","surface-tint":"#544fc0","on-surface-variant":"#464553","primary-fixed-dim":"#c3c0ff","primary-fixed":"#e2dfff","surface-container":"#e5eeff","background":"#f8f9ff","on-primary":"#ffffff","tertiary-fixed-dim":"#bcc9c6","inverse-surface":"#213145","outline-variant":"#c8c4d5","on-secondary-container":"#006f66","outline":"#777584","surface-dim":"#cbdbf5","secondary-container":"#86f2e4","secondary-fixed":"#89f5e7","surface-container-low":"#eff4ff","error-container":"#ffdad6","tertiary-fixed":"#d8e5e2","secondary-fixed-dim":"#6bd8cb","on-primary-container":"#a9a7ff","surface-container-lowest":"#ffffff","on-surface":"#0b1c30","surface-variant":"#d3e4fe","surface-container-highest":"#d3e4fe","on-background":"#0b1c30","on-error-container":"#93000a","secondary":"#006a61","primary":"#1f108e","tertiary":"#232f2d","surface-bright":"#f8f9ff","on-secondary":"#ffffff","surface-container-high":"#dce9ff","on-tertiary":"#ffffff","on-secondary-fixed":"#00201d","inverse-on-surface":"#eaf1ff","primary-container":"#3730a3","on-primary-fixed":"#0f0069","on-tertiary-container":"#a5b2af"},
+    borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","full":"9999px"},
+    spacing:{"margin-mobile":"20px","xs":"4px","xl":"32px","lg":"24px","margin-desktop":"40px","gutter":"16px","sm":"8px","md":"16px","base":"4px"},
+    fontFamily:{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"label-sm":["Inter"]},
+    fontSize:{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-md":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["12px",{"lineHeight":"16px","fontWeight":"500"}]}
+  }}}
+</script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex">
+
+<!-- Side Nav -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant/60 py-lg z-50">
+  <div id="sidebar-content"></div>
+</aside>
+
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+
+  <!-- Top Nav -->
+  <header class="flex justify-between items-center px-5 md:px-10 w-full border-b border-outline-variant/60 bg-surface/90 backdrop-blur-sm h-14 sticky top-0 z-40">
+    <h2 class="font-semibold text-base text-on-surface">Analytics</h2>
+    <a href="/new-goal.html"
+      class="flex items-center gap-xs bg-primary text-on-primary px-4 py-[7px] rounded-xl font-label-md text-[13px] shadow-sm hover:brightness-110 active:scale-[0.98] transition-all">
+      <span class="material-symbols-outlined text-[16px]">add</span> New Goal
+    </a>
+  </header>
+
+  <div class="p-5 md:p-10 space-y-6 max-w-[1200px] mx-auto w-full flex-1">
+
+    <!-- ① Hero stat bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="fade-up bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/40 flex flex-col gap-1" style="animation-delay:0ms">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Active Goals</span>
+          <span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings:'FILL' 1;">target</span>
+        </div>
+        <p id="stat-goals" class="text-[36px] font-bold text-on-surface leading-none tabular-nums mt-1">—</p>
+      </div>
+      <div class="fade-up bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/40 flex flex-col gap-1" style="animation-delay:60ms">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Day Streak</span>
+          <span class="material-symbols-outlined text-[18px] text-secondary" style="font-variation-settings:'FILL' 1;">local_fire_department</span>
+        </div>
+        <p id="stat-streak" class="text-[36px] font-bold text-secondary leading-none tabular-nums mt-1">—</p>
+      </div>
+      <div class="fade-up bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/40 flex flex-col gap-1" style="animation-delay:120ms">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Overall Progress</span>
+          <span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings:'FILL' 1;">trending_up</span>
+        </div>
+        <p id="stat-progress" class="text-[36px] font-bold text-on-surface leading-none tabular-nums mt-1">—</p>
+      </div>
+      <div class="fade-up bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/40 flex flex-col gap-1" style="animation-delay:180ms">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Tasks Done</span>
+          <span class="material-symbols-outlined text-[18px] text-secondary" style="font-variation-settings:'FILL' 1;">check_circle</span>
+        </div>
+        <p id="stat-tasks" class="text-[36px] font-bold text-on-surface leading-none tabular-nums mt-1">—</p>
+      </div>
+    </div>
+
+    <!-- ② Goals progress + Category side by side -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+
+      <!-- Goals progress -->
+      <section class="fade-up md:col-span-8 bg-white rounded-2xl shadow-sm p-6" style="animation-delay:80ms">
+        <h3 class="font-semibold text-base text-on-surface mb-5">Goal Progress</h3>
+        <div id="goal-bars" class="space-y-4">
+          <div class="text-on-surface-variant text-sm animate-pulse">Loading…</div>
+        </div>
+      </section>
+
+      <!-- By Category -->
+      <section class="fade-up md:col-span-4 bg-white rounded-2xl shadow-sm p-6 flex flex-col" style="animation-delay:120ms">
+        <h3 class="font-semibold text-base text-on-surface mb-5">By Category</h3>
+        <div id="category-bars" class="flex-1 space-y-4">
+          <div class="text-on-surface-variant text-sm animate-pulse">Loading…</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ③ Consistency heatmap -->
+    <section class="fade-up bg-white rounded-2xl shadow-sm p-6 overflow-hidden" style="animation-delay:160ms">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
+        <div>
+          <h3 class="font-semibold text-base text-on-surface">Consistency Heatmap</h3>
+          <p class="text-[12px] text-on-surface-variant mt-[2px]">26-week activity pattern</p>
+        </div>
+        <div class="flex items-center gap-2 text-[11px] text-on-surface-variant">
+          <span>Less</span>
+          <div class="flex gap-[3px]">
+            <div class="w-[13px] h-[13px] rounded-[3px] bg-surface-container"></div>
+            <div class="w-[13px] h-[13px] rounded-[3px] bg-secondary/25"></div>
+            <div class="w-[13px] h-[13px] rounded-[3px] bg-secondary/50"></div>
+            <div class="w-[13px] h-[13px] rounded-[3px] bg-secondary/75"></div>
+            <div class="w-[13px] h-[13px] rounded-[3px] bg-secondary"></div>
+          </div>
+          <span>More</span>
+        </div>
+      </div>
+      <div class="flex gap-[6px] overflow-x-auto pb-2">
+        <div class="flex flex-col gap-[6px] text-[10px] text-on-surface-variant pr-2 justify-between pt-[1px] shrink-0">
+          <span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span>Sun</span>
+        </div>
+        <div class="flex gap-[5px]" id="heatmap-container"></div>
+      </div>
+    </section>
+
+    <!-- ④ Recent wins -->
+    <section class="fade-up bg-white rounded-2xl shadow-sm p-6" style="animation-delay:200ms">
+      <h3 class="font-semibold text-base text-on-surface mb-4">Recent Wins</h3>
+      <div id="wins-list" class="space-y-3">
+        <div class="text-on-surface-variant text-sm animate-pulse">Loading…</div>
+      </div>
+    </section>
+
+    <!-- ⑤ CTA -->
+    <div class="fade-up rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/5 to-transparent border border-outline-variant/60 p-7" style="animation-delay:240ms">
+      <div class="max-w-md">
+        <h4 class="font-bold text-lg text-on-surface">Keep the Momentum</h4>
+        <p class="text-[13px] text-on-surface-variant mt-1 leading-relaxed">Consistent daily tracking makes you 3× more likely to hit your 12-month goals.</p>
+        <a href="/new-goal.html"
+          class="mt-4 inline-flex items-center gap-xs bg-primary text-on-primary px-5 py-[9px] rounded-xl font-label-md text-[13px] shadow-sm hover:brightness-110 transition-all">
+          <span class="material-symbols-outlined text-[16px]">add</span> Start a New Goal
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-auto px-10 py-6 text-center text-on-surface-variant/50 text-xs">
+    © 2024 Momentum · Precise progression.
+  </footer>
+</main>
+
+<script src="/js/api.js"></script>
+<script>
+  document.getElementById('sidebar-content').innerHTML = sidebarHTML('analytics');
+
+  const catBarPalette = ['bg-secondary','bg-primary','bg-[#f97316]','bg-[#8b5cf6]','bg-[#0ea5e9]','bg-[#22c55e]'];
+  const heatColors = ['bg-surface-container','bg-secondary/20','bg-secondary/45','bg-secondary/70','bg-secondary'];
+
+  async function loadAnalytics() {
+    const data = await API.get('/api/analytics/overview');
+
+    // Stats
+    document.getElementById('stat-goals').textContent    = data.totalGoals;
+    document.getElementById('stat-streak').textContent   = data.streak;
+    document.getElementById('stat-progress').textContent = data.overallProgress + '%';
+    document.getElementById('stat-tasks').textContent    = data.taskCompletionRate + '%';
+
+    // Goal progress bars
+    const goalBars = document.getElementById('goal-bars');
+    if (!data.goals.length) {
+      goalBars.innerHTML = `<p class="text-sm text-on-surface-variant">No goals yet. <a href="/new-goal.html" class="text-primary hover:underline">Create your first goal!</a></p>`;
+    } else {
+      goalBars.innerHTML = data.goals.map((g, i) => {
+        const st = goalStatus(g);
+        return `<div>
+          <div class="flex justify-between items-center mb-[6px]">
+            <a href="/goal-detail.html?id=${g.id}"
+              class="text-[13px] font-semibold text-on-surface hover:text-primary transition-colors flex items-center gap-[6px] truncate max-w-[60%]">
+              <span class="material-symbols-outlined text-[16px] text-on-surface-variant" style="font-variation-settings:'FILL' 1;">${g.icon || 'flag'}</span>
+              ${g.title}
+            </a>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-semibold px-2 py-[2px] rounded-full ${st.classes}">${st.label}</span>
+              <span class="text-[13px] font-bold tabular-nums text-on-surface">${g.progress_pct}%</span>
+            </div>
+          </div>
+          <div class="w-full h-[7px] bg-surface-container-high rounded-full overflow-hidden">
+            <div class="${catBarPalette[i % catBarPalette.length]} h-full rounded-full bar-anim" style="--w:${g.progress_pct}%"></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // Category bars
+    const catBars = document.getElementById('category-bars');
+    if (!data.byCategory.length) {
+      catBars.innerHTML = '<p class="text-sm text-on-surface-variant">No data yet.</p>';
+    } else {
+      catBars.innerHTML = data.byCategory.map((c, i) => {
+        const cc = categoryColors[c.category] || categoryColors.Other;
+        const pct = Math.round(c.avg_progress);
+        return `<div>
+          <div class="flex justify-between mb-[6px]">
+            <div class="flex items-center gap-[6px]">
+              <span class="material-symbols-outlined text-[14px] text-on-surface-variant" style="font-variation-settings:'FILL' 1;">${categoryIcons[c.category] || 'flag'}</span>
+              <span class="text-[13px] font-semibold text-on-surface">${c.category}</span>
+            </div>
+            <span class="text-[13px] font-bold tabular-nums text-on-surface">${pct}%</span>
+          </div>
+          <div class="w-full h-[7px] bg-surface-container-high rounded-full overflow-hidden">
+            <div class="${catBarPalette[i % catBarPalette.length]} h-full rounded-full bar-anim" style="--w:${pct}%"></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // Heatmap
+    const heatmap = await API.get('/api/analytics/heatmap?days=182');
+    const actMap = {};
+    heatmap.forEach(h => { actMap[h.date] = h.active_goals; });
+    const maxActive = Math.max(...heatmap.map(h => h.active_goals), 1);
+
+    const container = document.getElementById('heatmap-container');
+    container.innerHTML = '';
+    for (let w = 25; w >= 0; w--) {
+      const col = document.createElement('div');
+      col.className = 'flex flex-col gap-[5px]';
+      for (let d = 0; d < 7; d++) {
+        const date = new Date();
+        date.setDate(date.getDate() - (w * 7) - (6 - d));
+        const ds = date.toISOString().split('T')[0];
+        const active = actMap[ds] || 0;
+        const level = active === 0 ? 0 : Math.min(4, Math.ceil((active / maxActive) * 4));
+        const cell = document.createElement('div');
+        cell.className = `heatmap-cell ${heatColors[level]}`;
+        cell.title = `${ds}: ${active} active`;
+        col.appendChild(cell);
+      }
+      container.appendChild(col);
+    }
+
+    // Wins
+    const winsEl = document.getElementById('wins-list');
+    if (!data.wins || !data.wins.length) {
+      winsEl.innerHTML = '<p class="text-sm text-on-surface-variant">Complete tasks and milestones to see your wins here.</p>';
+    } else {
+      winsEl.innerHTML = data.wins.map(w => `
+        <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low border border-outline-variant/40">
+          <div class="w-9 h-9 ${w.icon_bg || 'bg-secondary-container'} ${w.icon_color || 'text-on-secondary-container'} rounded-xl flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">${w.icon || 'stars'}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-semibold text-on-surface truncate">${w.message}</p>
+            ${w.goal_title ? `<p class="text-[11px] text-on-surface-variant mt-[1px]">${w.goal_title}</p>` : ''}
+          </div>
+          <span class="text-[11px] text-on-surface-variant shrink-0">${timeAgo(w.created_at)}</span>
+        </div>`).join('');
+    }
+  }
+
+  loadAnalytics().catch(console.error);
+</script>
+</body>
+</html>

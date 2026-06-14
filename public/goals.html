@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Goals | Momentum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .fade-up { animation: fadeUp .3s ease forwards; opacity: 0; }
+</style>
+<script id="tailwind-config">
+  tailwind.config={darkMode:"class",theme:{extend:{
+    colors:{"tertiary-container":"#394543","on-tertiary-fixed-variant":"#3d4947","error":"#ba1a1a","on-primary-fixed-variant":"#3b35a7","surface":"#f8f9ff","inverse-primary":"#c3c0ff","on-error":"#ffffff","on-tertiary-fixed":"#121e1c","on-secondary-fixed-variant":"#005049","surface-tint":"#544fc0","on-surface-variant":"#464553","primary-fixed-dim":"#c3c0ff","primary-fixed":"#e2dfff","surface-container":"#e5eeff","background":"#f8f9ff","on-primary":"#ffffff","tertiary-fixed-dim":"#bcc9c6","inverse-surface":"#213145","outline-variant":"#c8c4d5","on-secondary-container":"#006f66","outline":"#777584","surface-dim":"#cbdbf5","secondary-container":"#86f2e4","secondary-fixed":"#89f5e7","surface-container-low":"#eff4ff","error-container":"#ffdad6","tertiary-fixed":"#d8e5e2","secondary-fixed-dim":"#6bd8cb","on-primary-container":"#a9a7ff","surface-container-lowest":"#ffffff","on-surface":"#0b1c30","surface-variant":"#d3e4fe","surface-container-highest":"#d3e4fe","on-background":"#0b1c30","on-error-container":"#93000a","secondary":"#006a61","primary":"#1f108e","tertiary":"#232f2d","surface-bright":"#f8f9ff","on-secondary":"#ffffff","surface-container-high":"#dce9ff","on-tertiary":"#ffffff","on-secondary-fixed":"#00201d","inverse-on-surface":"#eaf1ff","primary-container":"#3730a3","on-primary-fixed":"#0f0069","on-tertiary-container":"#a5b2af"},
+    borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","full":"9999px"},
+    spacing:{"margin-mobile":"20px","xs":"4px","xl":"32px","lg":"24px","margin-desktop":"40px","gutter":"16px","sm":"8px","md":"16px","base":"4px"},
+    fontFamily:{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"label-sm":["Inter"]},
+    fontSize:{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-md":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["12px",{"lineHeight":"16px","fontWeight":"500"}]}
+  }}}
+</script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex">
+
+<!-- Side Nav -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant/60 py-lg z-50">
+  <div id="sidebar-content"></div>
+</aside>
+
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+
+  <!-- Top Nav -->
+  <header class="flex justify-between items-center px-5 md:px-10 w-full border-b border-outline-variant/60 bg-surface/90 backdrop-blur-sm h-14 sticky top-0 z-40">
+    <h2 class="font-semibold text-base text-on-surface">My Goals</h2>
+    <a href="/new-goal.html"
+      class="flex items-center gap-xs bg-primary text-on-primary px-4 py-[7px] rounded-xl font-label-md text-[13px] shadow-sm hover:brightness-110 active:scale-[0.98] transition-all">
+      <span class="material-symbols-outlined text-[16px]">add</span> New Goal
+    </a>
+  </header>
+
+  <!-- Content -->
+  <div class="p-5 md:p-10 max-w-[1200px] mx-auto w-full flex-1">
+
+    <!-- Summary row -->
+    <div id="summary-row" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"></div>
+
+    <!-- Filters + search -->
+    <div class="flex flex-wrap gap-sm mb-6 items-center">
+      <div class="flex gap-1 bg-surface-container-high rounded-xl p-[3px]">
+        <button onclick="setFilter('all')" data-filter="all" class="filter-btn px-4 py-[6px] rounded-lg font-label-md text-[13px] bg-white text-on-surface shadow-sm transition-all">All</button>
+        <button onclick="setFilter('active')" data-filter="active" class="filter-btn px-4 py-[6px] rounded-lg font-label-md text-[13px] text-on-surface-variant hover:text-on-surface transition-all">Active</button>
+        <button onclick="setFilter('on-track')" data-filter="on-track" class="filter-btn px-4 py-[6px] rounded-lg font-label-md text-[13px] text-on-surface-variant hover:text-on-surface transition-all">On Track</button>
+        <button onclick="setFilter('at-risk')" data-filter="at-risk" class="filter-btn px-4 py-[6px] rounded-lg font-label-md text-[13px] text-on-surface-variant hover:text-on-surface transition-all">At Risk</button>
+      </div>
+      <div class="flex gap-1 ml-1">
+        <button id="view-grid" onclick="setView('grid')" class="p-[7px] rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined text-[18px]">grid_view</span>
+        </button>
+        <button id="view-list" onclick="setView('list')" class="p-[7px] rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined text-[18px]">view_list</span>
+        </button>
+      </div>
+      <div class="ml-auto relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[16px]">search</span>
+        <input id="search-input" type="text" placeholder="Search goals…"
+          class="pl-9 pr-4 py-[7px] bg-surface-container-low border border-outline-variant rounded-xl outline-none focus:ring-2 focus:ring-primary/20 text-[13px] w-44 md:w-56 transition-all focus:w-56"/>
+      </div>
+    </div>
+
+    <!-- Goals grid/list -->
+    <div id="goals-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div class="col-span-full flex items-center justify-center py-xl text-on-surface-variant gap-sm">
+        <span class="material-symbols-outlined animate-spin">refresh</span> Loading…
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-auto px-10 py-6 text-center text-on-surface-variant/50 text-xs">
+    © 2024 Momentum · Precise progression.
+  </footer>
+</main>
+
+<!-- Mobile FAB -->
+<a href="/new-goal.html"
+  class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:brightness-110 active:scale-90 transition-all z-50">
+  <span class="material-symbols-outlined text-2xl">add</span>
+</a>
+
+<script src="/js/api.js"></script>
+<script>
+  document.getElementById('sidebar-content').innerHTML = sidebarHTML('goals');
+
+  let allGoals = [];
+  let currentFilter = 'all';
+  let currentView = 'grid';
+
+  function setView(v) {
+    currentView = v;
+    document.getElementById('view-grid').classList.toggle('bg-surface-container', v === 'grid');
+    document.getElementById('view-list').classList.toggle('bg-surface-container', v === 'list');
+    renderGoals();
+  }
+
+  function setFilter(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      const active = btn.dataset.filter === filter;
+      btn.classList.toggle('bg-white', active);
+      btn.classList.toggle('shadow-sm', active);
+      btn.classList.toggle('text-on-surface', active);
+      btn.classList.toggle('text-on-surface-variant', !active);
+    });
+    renderGoals();
+  }
+
+  function renderSummary(goals) {
+    const active = goals.filter(g => g.status === 'active').length;
+    const onTrack = goals.filter(g => goalStatus(g).label === 'On Track' || goalStatus(g).label === 'Completed').length;
+    const atRisk  = goals.filter(g => goalStatus(g).label === 'At Risk' || goalStatus(g).label === 'Overdue').length;
+    const avgPct  = goals.length ? Math.round(goals.reduce((s, g) => s + g.progress_pct, 0) / goals.length) : 0;
+    const cards = [
+      { label: 'Active Goals', value: active, icon: 'target', color: 'text-primary', bg: 'bg-primary/10' },
+      { label: 'On Track',     value: onTrack, icon: 'trending_up', color: 'text-secondary', bg: 'bg-secondary/10' },
+      { label: 'At Risk',      value: atRisk,  icon: 'warning',  color: 'text-[#c2410c]', bg: 'bg-[#f97316]/10' },
+      { label: 'Avg Progress', value: avgPct + '%', icon: 'percent', color: 'text-on-surface', bg: 'bg-surface-container-high' },
+    ];
+    document.getElementById('summary-row').innerHTML = cards.map(c => `
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-outline-variant/40 flex items-center gap-3">
+        <div class="w-9 h-9 ${c.bg} rounded-lg flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[18px] ${c.color}" style="font-variation-settings:'FILL' 1;">${c.icon}</span>
+        </div>
+        <div>
+          <p class="text-[22px] font-bold text-on-surface leading-none">${c.value}</p>
+          <p class="text-[11px] text-on-surface-variant mt-[2px]">${c.label}</p>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderGoals() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    let filtered = allGoals.filter(g => {
+      const st = goalStatus(g).label;
+      const matchesFilter =
+        currentFilter === 'all'      ||
+        (currentFilter === 'active'   && g.status === 'active') ||
+        (currentFilter === 'on-track' && (st === 'On Track' || st === 'Completed')) ||
+        (currentFilter === 'at-risk'  && (st === 'At Risk' || st === 'Overdue'));
+      const matchesSearch = g.title.toLowerCase().includes(q) || (g.description || '').toLowerCase().includes(q);
+      return matchesFilter && matchesSearch;
+    });
+
+    const container = document.getElementById('goals-container');
+    container.className = currentView === 'grid'
+      ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'
+      : 'flex flex-col gap-3';
+
+    if (!filtered.length) {
+      container.innerHTML = `
+        <div class="col-span-full text-center py-16 border border-dashed border-outline-variant rounded-2xl text-on-surface-variant">
+          <span class="material-symbols-outlined text-4xl block mb-3 opacity-30">search_off</span>
+          <p class="text-sm font-medium">No goals match this filter.</p>
+          <a href="/new-goal.html" class="mt-3 inline-flex items-center gap-xs bg-primary text-on-primary px-5 py-[9px] rounded-xl font-label-md text-[13px] shadow-sm hover:brightness-110 transition-all">
+            <span class="material-symbols-outlined text-[16px]">add</span> Create one
+          </a>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map((g, i) => {
+      const cc  = categoryColors[g.category] || categoryColors.Other;
+      const acc = categoryAccent[g.category] || categoryAccent.Other;
+      const st  = goalStatus(g);
+      const dl  = daysLeftLabel(g.target_date);
+      const incs = quickIncrements(g.unit, g.target_value);
+      const delay = `style="animation-delay:${i * 40}ms"`;
+
+      if (currentView === 'list') {
+        // Compact list row
+        return `
+          <div class="fade-up bg-white rounded-xl shadow-sm ${acc} flex items-center gap-4 p-4 hover:shadow-md transition-all group" ${delay}>
+            <div class="w-10 h-10 ${cc.bg} ${cc.text} rounded-xl flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">${g.icon || categoryIcons[g.category] || 'flag'}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <h4 class="font-semibold text-sm text-on-surface truncate max-w-[240px] group-hover:text-primary transition-colors">${g.title}</h4>
+                <span class="px-2 py-[2px] rounded-full text-[10px] font-semibold shrink-0 ${st.classes}">${st.label}</span>
+                ${dl ? `<span class="text-[10px] text-on-surface-variant shrink-0">${dl}</span>` : ''}
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="flex-1 bg-surface-container-high h-[5px] rounded-full overflow-hidden max-w-[200px]">
+                  <div class="bg-secondary h-full rounded-full transition-all" style="width:${g.progress_pct}%"></div>
+                </div>
+                <span class="text-[12px] font-semibold text-on-surface-variant tabular-nums">${g.progress_pct}%</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              ${incs.map(n => `
+                <button onclick="quickLog(event, ${g.id}, ${n}, '${g.unit}', ${g.target_value})"
+                  class="px-[10px] py-[5px] text-[11px] font-semibold rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors border border-secondary/20">
+                  +${n}
+                </button>`).join('')}
+              <a href="/goal-detail.html?id=${g.id}"
+                class="px-4 py-[7px] rounded-xl bg-surface-container font-label-md text-[12px] text-on-surface hover:bg-surface-container-high transition-all">
+                Open
+              </a>
+              <button onclick="deleteGoal(${g.id}, event)" class="p-[6px] rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-all opacity-0 group-hover:opacity-100">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+          </div>`;
+      }
+
+      // Grid card
+      return `
+        <div class="fade-up bg-white rounded-2xl shadow-sm ${acc} overflow-hidden hover:shadow-md transition-all group" ${delay}>
+          <div class="p-5">
+            <div class="flex items-start gap-3 mb-4">
+              <div class="w-10 h-10 ${cc.bg} ${cc.text} rounded-xl flex items-center justify-center shrink-0 mt-[1px]">
+                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">${g.icon || categoryIcons[g.category] || 'flag'}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap mb-[2px]">
+                  <span class="px-2 py-[2px] rounded-full text-[10px] font-semibold ${st.classes}">${st.label}</span>
+                  ${dl ? `<span class="text-[10px] text-on-surface-variant">${dl}</span>` : ''}
+                </div>
+                <h4 class="font-semibold text-[15px] text-on-surface leading-tight group-hover:text-primary transition-colors">${g.title}</h4>
+                <p class="text-[12px] text-on-surface-variant mt-[2px] line-clamp-1">${g.description || g.category}</p>
+              </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="mb-4">
+              <div class="flex justify-between items-baseline mb-[6px]">
+                <span class="text-[12px] text-on-surface-variant">${g.current_value} / ${g.target_value} ${g.unit || ''}</span>
+                <span class="text-[22px] font-bold text-on-surface leading-none tabular-nums">${g.progress_pct}%</span>
+              </div>
+              <div class="w-full bg-surface-container-high h-[6px] rounded-full overflow-hidden">
+                <div class="bg-secondary h-full rounded-full transition-all duration-700" style="width:${g.progress_pct}%"></div>
+              </div>
+            </div>
+
+            <!-- Quick-log strip -->
+            <div class="flex items-center gap-[6px] pt-3 border-t border-outline-variant/40 flex-wrap">
+              ${incs.map(n => `
+                <button onclick="quickLog(event, ${g.id}, ${n}, '${g.unit}', ${g.target_value})"
+                  class="flex-1 min-w-0 py-[6px] text-[12px] font-semibold rounded-xl bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors border border-secondary/20 truncate">
+                  +${n} ${g.unit || ''}
+                </button>`).join('')}
+              <a href="/goal-detail.html?id=${g.id}"
+                class="ml-auto p-[7px] rounded-xl bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all">
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // Quick log from card — same as dashboard
+  async function quickLog(event, goalId, increment, unit, targetValue) {
+    event.preventDefault();
+    const goal = allGoals.find(g => g.id === goalId);
+    if (!goal) return;
+    const today = new Date().toISOString().split('T')[0];
+    const newVal = Math.min(targetValue, goal.current_value + increment);
+    await API.post(`/api/goals/${goalId}/progress`, { date: today, value: increment });
+    await API.put(`/api/goals/${goalId}`, { current_value: newVal });
+    goal.current_value = newVal;
+    goal.progress_pct = Math.min(100, Math.round((newVal / targetValue) * 100));
+    renderGoals();
+    showToast(`+${increment} ${unit} logged`);
+  }
+
+  async function deleteGoal(id, event) {
+    event.preventDefault();
+    const ok = await showConfirm('Delete this goal? All progress will be lost.');
+    if (!ok) return;
+    await API.del(`/api/goals/${id}`);
+    allGoals = allGoals.filter(g => g.id !== id);
+    renderGoals();
+    renderSummary(allGoals);
+    showToast('Goal deleted');
+  }
+
+  document.getElementById('search-input').addEventListener('input', renderGoals);
+
+  async function loadGoals() {
+    allGoals = await API.get('/api/goals');
+    renderSummary(allGoals);
+    renderGoals();
+  }
+
+  loadGoals().catch(console.error);
+</script>
+</body>
+</html>

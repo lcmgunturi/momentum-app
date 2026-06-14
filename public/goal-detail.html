@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Goal Details | Momentum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  .glass-card { background:rgba(255,255,255,0.72); backdrop-filter:blur(14px); }
+  .timeline-track::before { content:''; position:absolute; top:50%; left:0; right:0; height:2px; background:#e2e8f0; z-index:0; transform:translateY(-50%); }
+  .custom-scrollbar::-webkit-scrollbar { width:4px; height:4px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:10px; }
+  @keyframes checkPop { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
+  .check-pop { animation: checkPop .25s ease; }
+</style>
+<script id="tailwind-config">
+  tailwind.config={darkMode:"class",theme:{extend:{
+    colors:{"tertiary-container":"#394543","on-tertiary-fixed-variant":"#3d4947","error":"#ba1a1a","on-primary-fixed-variant":"#3b35a7","surface":"#f8f9ff","inverse-primary":"#c3c0ff","on-error":"#ffffff","on-tertiary-fixed":"#121e1c","on-secondary-fixed-variant":"#005049","surface-tint":"#544fc0","on-surface-variant":"#464553","primary-fixed-dim":"#c3c0ff","primary-fixed":"#e2dfff","surface-container":"#e5eeff","background":"#f8f9ff","on-primary":"#ffffff","tertiary-fixed-dim":"#bcc9c6","inverse-surface":"#213145","outline-variant":"#c8c4d5","on-secondary-container":"#006f66","outline":"#777584","surface-dim":"#cbdbf5","secondary-container":"#86f2e4","secondary-fixed":"#89f5e7","surface-container-low":"#eff4ff","error-container":"#ffdad6","tertiary-fixed":"#d8e5e2","secondary-fixed-dim":"#6bd8cb","on-primary-container":"#a9a7ff","surface-container-lowest":"#ffffff","on-surface":"#0b1c30","surface-variant":"#d3e4fe","surface-container-highest":"#d3e4fe","on-background":"#0b1c30","on-error-container":"#93000a","secondary":"#006a61","primary":"#1f108e","tertiary":"#232f2d","surface-bright":"#f8f9ff","on-secondary":"#ffffff","surface-container-high":"#dce9ff","on-tertiary":"#ffffff","on-secondary-fixed":"#00201d","inverse-on-surface":"#eaf1ff","primary-container":"#3730a3","on-primary-fixed":"#0f0069","on-tertiary-container":"#a5b2af"},
+    borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","full":"9999px"},
+    spacing:{"margin-mobile":"20px","xs":"4px","xl":"32px","lg":"24px","margin-desktop":"40px","gutter":"16px","sm":"8px","md":"16px","base":"4px"},
+    fontFamily:{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"label-sm":["Inter"]},
+    fontSize:{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-md":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["12px",{"lineHeight":"16px","fontWeight":"500"}]}
+  }}}
+</script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex">
+
+<!-- Side Nav -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant/60 py-lg z-50">
+  <div id="sidebar-content"></div>
+</aside>
+
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+
+  <!-- Top Nav -->
+  <header class="flex justify-between items-center px-5 md:px-10 w-full border-b border-outline-variant/60 bg-surface/90 backdrop-blur-sm h-14 sticky top-0 z-40">
+    <div class="flex items-center gap-sm">
+      <a href="/goals.html" class="p-[6px] hover:bg-surface-container-high rounded-lg transition-colors text-on-surface-variant">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </a>
+      <h2 id="page-title" class="font-semibold text-base text-on-surface truncate max-w-[280px]">Goal Details</h2>
+    </div>
+    <div class="flex items-center gap-2">
+      <!-- Log history (detailed) -->
+      <button id="log-history-btn"
+        class="hidden sm:flex items-center gap-xs border border-outline-variant rounded-xl px-4 py-[7px] font-label-md text-[13px] text-on-surface-variant hover:bg-surface-container-high transition-colors">
+        <span class="material-symbols-outlined text-[16px]">history</span> History
+      </button>
+      <button id="delete-goal-btn" class="p-[6px] rounded-lg hover:bg-error-container hover:text-on-error-container transition-colors text-on-surface-variant">
+        <span class="material-symbols-outlined text-[20px]">delete</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div id="content" class="p-5 md:p-10 space-y-6 max-w-[1200px] mx-auto w-full">
+    <div class="flex items-center gap-sm py-10 text-on-surface-variant text-sm justify-center">
+      <span class="material-symbols-outlined animate-spin">refresh</span> Loading…
+    </div>
+  </div>
+
+  <footer class="mt-auto px-10 py-6 text-center text-on-surface-variant/50 text-xs">
+    © 2024 Momentum · Precise progression.
+  </footer>
+</main>
+
+<!-- Detailed Log Modal (optional, for notes + back-dating) -->
+<div id="history-modal" class="fixed inset-0 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center z-[200] hidden">
+  <div class="bg-surface rounded-2xl p-xl shadow-2xl max-w-md w-full mx-4 border border-outline-variant">
+    <h3 class="font-semibold text-base text-on-surface mb-lg">Log Past Entry</h3>
+    <div class="space-y-md">
+      <div>
+        <label class="block font-label-md text-[13px] mb-xs text-on-surface-variant">Date</label>
+        <input id="h-date" type="date" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm"/>
+      </div>
+      <div>
+        <label class="block font-label-md text-[13px] mb-xs text-on-surface-variant">Value <span id="h-unit" class="opacity-60"></span></label>
+        <input id="h-value" type="number" min="0" step="0.1" placeholder="0" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm"/>
+      </div>
+      <div>
+        <label class="block font-label-md text-[13px] mb-xs text-on-surface-variant">Notes <span class="opacity-50">(optional)</span></label>
+        <input id="h-notes" type="text" placeholder="How did it go?" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm"/>
+      </div>
+    </div>
+    <div class="flex gap-md justify-end mt-xl pt-md border-t border-outline-variant/60">
+      <button onclick="closeHistoryModal()" class="px-lg py-[9px] rounded-xl border border-outline-variant font-label-md text-[13px] text-on-surface-variant hover:bg-surface-container-high transition-colors">Cancel</button>
+      <button id="save-history-btn" class="px-lg py-[9px] rounded-xl bg-primary text-on-primary font-label-md text-[13px] hover:brightness-110 transition-all">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Task Modal -->
+<div id="task-modal" class="fixed inset-0 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center z-[200] hidden">
+  <div class="bg-surface rounded-2xl p-xl shadow-2xl max-w-md w-full mx-4 border border-outline-variant">
+    <h3 class="font-semibold text-base text-on-surface mb-lg">Add Task</h3>
+    <div class="space-y-md">
+      <div>
+        <label class="block text-[13px] font-medium mb-xs text-on-surface-variant">Task Title</label>
+        <input id="task-title" type="text" placeholder="e.g., Complete chapter 5"
+          class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm"/>
+      </div>
+      <div class="grid grid-cols-2 gap-md">
+        <div>
+          <label class="block text-[13px] font-medium mb-xs text-on-surface-variant">Category</label>
+          <input id="task-category" type="text" placeholder="e.g., Reading"
+            class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm"/>
+        </div>
+        <div>
+          <label class="block text-[13px] font-medium mb-xs text-on-surface-variant">Priority</label>
+          <select id="task-priority" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm">
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-md justify-end mt-xl pt-md border-t border-outline-variant/60">
+      <button onclick="closeModal('task-modal')" class="px-lg py-[9px] rounded-xl border border-outline-variant font-label-md text-[13px] text-on-surface-variant hover:bg-surface-container-high">Cancel</button>
+      <button id="save-task-btn" class="px-lg py-[9px] rounded-xl bg-primary text-on-primary font-label-md text-[13px] hover:brightness-110">Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Milestone Modal -->
+<div id="milestone-modal" class="fixed inset-0 bg-on-surface/40 backdrop-blur-sm flex items-center justify-center z-[200] hidden">
+  <div class="bg-surface rounded-2xl p-xl shadow-2xl max-w-md w-full mx-4 border border-outline-variant">
+    <h3 class="font-semibold text-base text-on-surface mb-lg">Add Milestone</h3>
+    <div class="space-y-md">
+      <div>
+        <label class="block text-[13px] font-medium mb-xs text-on-surface-variant">Title</label>
+        <input id="milestone-title" type="text" placeholder="e.g., Reach halfway point"
+          class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm"/>
+      </div>
+      <div>
+        <label class="block text-[13px] font-medium mb-xs text-on-surface-variant">Target Date <span class="opacity-50">(optional)</span></label>
+        <input id="milestone-date" type="date"
+          class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-md outline-none focus:ring-2 focus:ring-primary text-sm"/>
+      </div>
+    </div>
+    <div class="flex gap-md justify-end mt-xl pt-md border-t border-outline-variant/60">
+      <button onclick="closeModal('milestone-modal')" class="px-lg py-[9px] rounded-xl border border-outline-variant font-label-md text-[13px] text-on-surface-variant hover:bg-surface-container-high">Cancel</button>
+      <button id="save-milestone-btn" class="px-lg py-[9px] rounded-xl bg-primary text-on-primary font-label-md text-[13px] hover:brightness-110">Add Milestone</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+  document.getElementById('sidebar-content').innerHTML = sidebarHTML('goals');
+
+  const goalId = getGoalIdFromUrl();
+  if (!goalId) window.location.href = '/goals.html';
+
+  let goal = null;
+
+  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+  function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
+  function closeHistoryModal() { closeModal('history-modal'); }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+  function renderContent() {
+    const cc   = categoryColors[goal.category] || categoryColors.Other;
+    const acc  = categoryAccent[goal.category] || categoryAccent.Other;
+    const st   = goalStatus(goal);
+    const dl   = daysLeftLabel(goal.target_date);
+    const day  = goal.start_date ? Math.floor((new Date() - new Date(goal.start_date)) / 86400000) : 0;
+    const incs = quickIncrements(goal.unit, goal.target_value);
+
+    // Group tasks
+    const taskGroups = {};
+    goal.tasks.forEach(t => {
+      const c = t.task_category || 'General';
+      if (!taskGroups[c]) taskGroups[c] = [];
+      taskGroups[c].push(t);
+    });
+
+    // Progress chart data (last 7 days)
+    const progressDays = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const found = goal.recent_progress.find(p => p.date === dateStr);
+      progressDays.push({
+        label: ['M','T','W','T','F','S','S'][d.getDay() === 0 ? 6 : d.getDay() - 1],
+        value: found ? found.value : 0,
+        isToday: i === 0
+      });
+    }
+    const maxVal = Math.max(...progressDays.map(d => d.value), 1);
+    const weekTotal = progressDays.reduce((s, d) => s + d.value, 0);
+
+    // Completed tasks count
+    const doneCount = goal.tasks.filter(t => t.completed).length;
+    const totalCount = goal.tasks.length;
+
+    document.getElementById('content').innerHTML = `
+    <!-- ① Hero card: progress + inline update -->
+    <div class="bg-white rounded-2xl shadow-sm ${acc} overflow-hidden">
+      <div class="p-6 md:p-8">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+
+          <!-- Left: meta -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-sm mb-3 flex-wrap">
+              <span class="px-3 py-1 rounded-full text-[11px] font-semibold ${st.classes}">${st.label}</span>
+              <span class="px-3 py-1 rounded-full text-[11px] font-medium bg-surface-container text-on-surface-variant">Day ${day}</span>
+              ${dl ? `<span class="px-3 py-1 rounded-full text-[11px] font-medium bg-surface-container text-on-surface-variant">${dl}</span>` : ''}
+            </div>
+            <h3 class="font-bold text-2xl text-on-surface leading-tight mb-1">${goal.title}</h3>
+            <p class="text-on-surface-variant text-sm leading-relaxed max-w-lg">${goal.description || ''}</p>
+            ${goal.motivation ? `<p class="mt-3 text-sm italic text-on-surface-variant/70 border-l-2 border-primary/30 pl-3">${goal.motivation}</p>` : ''}
+          </div>
+
+          <!-- Right: progress circle + inline controls -->
+          <div class="md:text-right flex flex-col items-start md:items-end gap-4 shrink-0">
+            <!-- Big % display -->
+            <div class="flex items-center gap-3">
+              <button id="decrement-btn"
+                class="w-10 h-10 rounded-full border border-outline-variant hover:bg-surface-container-high active:scale-90 flex items-center justify-center transition-all text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">remove</span>
+              </button>
+              <div class="text-center">
+                <div class="text-4xl font-bold text-primary leading-none tabular-nums" id="inline-pct">${goal.progress_pct}%</div>
+                <div class="text-[12px] text-on-surface-variant mt-1">${goal.current_value} / ${goal.target_value} ${goal.unit || ''}</div>
+              </div>
+              <button id="increment-btn"
+                class="w-10 h-10 rounded-full bg-primary text-on-primary hover:brightness-110 active:scale-90 flex items-center justify-center transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+              </button>
+            </div>
+
+            <!-- Quick preset buttons -->
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+              <span class="text-[11px] text-on-surface-variant">Quick log:</span>
+              ${incs.map(n => `
+                <button onclick="applyIncrement(${n})"
+                  class="px-3 py-1 text-[12px] font-semibold rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors border border-secondary/20">
+                  +${n} ${goal.unit || ''}
+                </button>`).join('')}
+            </div>
+
+            <!-- Save inline progress -->
+            <button id="save-inline-btn"
+              class="hidden bg-secondary text-on-secondary px-5 py-[9px] rounded-xl font-label-md text-[13px] hover:brightness-110 active:scale-[0.98] transition-all">
+              Save Progress
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mt-6">
+          <div class="w-full bg-surface-container-high h-[8px] rounded-full overflow-hidden">
+            <div id="progress-bar" class="bg-secondary h-full rounded-full transition-all duration-700"
+              style="width:${goal.progress_pct}%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-on-surface-variant mt-2">
+            <span>Started ${formatDate(goal.start_date)}</span>
+            <span>${goal.target_date ? `Due ${formatDate(goal.target_date)}` : 'No end date'}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② Two-col layout: tasks + progress chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+      <!-- Tasks -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/40">
+          <div>
+            <h4 class="font-semibold text-base text-on-surface">Tasks</h4>
+            <p class="text-[12px] text-on-surface-variant mt-[1px]">${doneCount} of ${totalCount} done</p>
+          </div>
+          <button onclick="openModal('task-modal')" class="text-primary text-[13px] font-semibold hover:underline flex items-center gap-[2px]">
+            <span class="material-symbols-outlined text-[16px]">add</span> Add
+          </button>
+        </div>
+        <div class="p-4 space-y-3 max-h-[420px] overflow-y-auto custom-scrollbar" id="tasks-container">
+          ${Object.keys(taskGroups).length === 0
+            ? `<div class="text-center py-8 text-on-surface-variant">
+                <span class="material-symbols-outlined text-3xl block mb-2 opacity-40">check_circle</span>
+                <p class="text-[13px]">No tasks yet. Add one to break down your goal.</p>
+               </div>`
+            : Object.entries(taskGroups).map(([cat, tasks]) => `
+              <div class="mb-4">
+                <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 px-1">${cat}</p>
+                <div class="space-y-[6px]">
+                  ${tasks.map(t => `
+                    <label class="flex items-center gap-sm p-sm rounded-xl border border-outline-variant/50 hover:border-primary/30 transition-colors cursor-pointer group bg-surface/50">
+                      <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id}, this.checked, this)"
+                        class="w-[18px] h-[18px] rounded-md text-secondary focus:ring-secondary border-outline-variant cursor-pointer shrink-0"/>
+                      <span class="flex-1 text-sm ${t.completed ? 'line-through text-on-surface-variant/60' : 'text-on-surface'} transition-all">${t.title}</span>
+                      ${t.priority === 'high' ? `<span class="text-[10px] font-bold px-[6px] py-[2px] rounded bg-error/10 text-error shrink-0">HIGH</span>` : ''}
+                      <button onclick="deleteTask(${t.id}, event)" class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error transition-all shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </label>`).join('')}
+                </div>
+              </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Progress chart -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/40">
+          <div>
+            <h4 class="font-semibold text-base text-on-surface">This Week</h4>
+            <p class="text-[12px] text-on-surface-variant mt-[1px]">${weekTotal.toFixed(1)} ${goal.unit || ''} logged</p>
+          </div>
+          <button onclick="openModal('history-modal')"
+            class="text-primary text-[13px] font-semibold hover:underline flex items-center gap-[2px]">
+            <span class="material-symbols-outlined text-[16px]">add</span> Log past entry
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="flex items-end justify-between gap-2 h-40 relative">
+            <!-- Grid lines -->
+            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none border-l border-b border-outline-variant/40">
+              ${[1,2,3].map(() => `<div class="w-full border-t border-outline-variant/20"></div>`).join('')}
+            </div>
+            ${progressDays.map(d => {
+              const h = Math.max(d.value > 0 ? Math.round((d.value / maxVal) * 88) : 4, 4);
+              return `<div class="flex flex-col items-center gap-1 relative z-10 flex-1 group">
+                <div class="w-full rounded-t-lg transition-all hover:brightness-110 cursor-default ${d.value > 0 ? 'bg-secondary' : 'bg-surface-container-high'} ${d.isToday && d.value > 0 ? 'ring-2 ring-secondary/30' : ''}"
+                  style="height:${h}%; min-height:4px; max-height:88%;"
+                  title="${d.value} ${goal.unit || ''}">
+                </div>
+                <p class="text-[10px] text-on-surface-variant ${d.isToday ? 'font-bold' : ''}">${d.label}</p>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ Milestones timeline -->
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/40">
+        <h4 class="font-semibold text-base text-on-surface">Milestones</h4>
+        <button onclick="openModal('milestone-modal')" class="text-primary text-[13px] font-semibold hover:underline flex items-center gap-[2px]">
+          <span class="material-symbols-outlined text-[16px]">add</span> Add
+        </button>
+      </div>
+      ${goal.milestones.length === 0
+        ? `<div class="text-center py-8 text-on-surface-variant">
+            <span class="material-symbols-outlined text-3xl block mb-2 opacity-40">flag</span>
+            <p class="text-[13px]">Add milestones to celebrate key achievements.</p>
+           </div>`
+        : `<div class="p-6 relative">
+            <div class="timeline-track relative flex flex-wrap md:flex-nowrap justify-between items-center custom-scrollbar overflow-x-auto gap-6 pb-4">
+              ${goal.milestones.map((m, i) => {
+                const done = m.completed;
+                const isNext = !done && goal.milestones.slice(0, i).every(p => p.completed);
+                return `<div class="relative z-10 flex flex-col items-center min-w-[120px] text-center">
+                  ${done ? `
+                    <button onclick="toggleMilestone(${m.id}, false)"
+                      class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center mb-2 shadow-sm hover:brightness-110 transition-all">
+                      <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">check</span>
+                    </button>` : isNext ? `
+                    <button onclick="toggleMilestone(${m.id}, true)"
+                      class="w-11 h-11 rounded-full border-[3px] border-primary bg-white text-primary flex items-center justify-center mb-2 shadow-md ring-4 ring-primary/10 hover:bg-primary/5 transition-all">
+                      <span class="material-symbols-outlined text-[20px]">flag</span>
+                    </button>` : `
+                    <button onclick="toggleMilestone(${m.id}, true)"
+                      class="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center mb-2 opacity-50 hover:opacity-80 transition-all">
+                      <span class="material-symbols-outlined text-[18px]">radio_button_unchecked</span>
+                    </button>`}
+                  <p class="text-[12px] font-semibold ${done ? 'text-secondary' : isNext ? 'text-primary' : 'text-on-surface-variant/60'} leading-snug">${m.title}</p>
+                  ${m.target_date ? `<p class="text-[10px] text-on-surface-variant/60 mt-[2px]">${formatDate(m.target_date)}</p>` : ''}
+                  <button onclick="deleteMilestone(${m.id})" class="mt-1 text-[10px] text-outline/50 hover:text-error transition-colors">×</button>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`}
+    </div>
+    `;
+
+    // Inline edit state
+    let pendingValue = goal.current_value;
+    const step = quickIncrements(goal.unit, goal.target_value)[0] || 1;
+
+    function updateInlineDisplay() {
+      const pct = Math.min(100, Math.round((pendingValue / goal.target_value) * 100));
+      document.getElementById('inline-pct').textContent = pct + '%';
+      document.getElementById('progress-bar').style.width = pct + '%';
+      const changed = pendingValue !== goal.current_value;
+      document.getElementById('save-inline-btn').classList.toggle('hidden', !changed);
+    }
+
+    window.applyIncrement = function(n) {
+      pendingValue = Math.min(goal.target_value, pendingValue + n);
+      updateInlineDisplay();
+    };
+
+    document.getElementById('increment-btn').onclick = () => applyIncrement(step);
+    document.getElementById('decrement-btn').onclick = () => {
+      pendingValue = Math.max(0, pendingValue - step);
+      updateInlineDisplay();
+    };
+
+    document.getElementById('save-inline-btn').onclick = async () => {
+      const btn = document.getElementById('save-inline-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      const today = new Date().toISOString().split('T')[0];
+      const delta = pendingValue - goal.current_value;
+      if (delta > 0) await API.post(`/api/goals/${goalId}/progress`, { date: today, value: delta });
+      goal = await API.put(`/api/goals/${goalId}`, { current_value: pendingValue });
+      goal.milestones = await API.get(`/api/goals/${goalId}/milestones`);
+      goal.tasks = await API.get(`/api/goals/${goalId}/tasks`);
+      goal.recent_progress = await API.get(`/api/goals/${goalId}/progress?days=7`);
+      showToast('Progress saved!');
+      renderContent();
+    };
+  }
+
+  // ── Actions ─────────────────────────────────────────────────────────────────
+  async function toggleTask(id, completed, checkbox) {
+    checkbox.closest('label').querySelector('.material-symbols-outlined.check-pop')?.classList.remove('check-pop');
+    await API.put(`/api/tasks/${id}`, { completed });
+    const task = goal.tasks.find(t => t.id === id);
+    if (task) task.completed = completed ? 1 : 0;
+    if (completed && task) {
+      await API.post('/api/wins', { goal_id: goal.id, message: `Completed: ${task.title}`, icon: 'check_circle', icon_bg: 'bg-secondary-container', icon_color: 'text-on-secondary-container' });
+      showToast('Task done! 🎉');
+    }
+    renderContent();
+  }
+
+  async function deleteTask(id, event) {
+    event.preventDefault(); event.stopPropagation();
+    goal.tasks = goal.tasks.filter(t => t.id !== id);
+    await API.del(`/api/tasks/${id}`);
+    renderContent(); showToast('Task removed');
+  }
+
+  async function toggleMilestone(id, complete) {
+    const m = await API.put(`/api/milestones/${id}`, { completed: complete });
+    const idx = goal.milestones.findIndex(x => x.id === id);
+    if (idx >= 0) goal.milestones[idx] = m;
+    if (complete) await API.post('/api/wins', { goal_id: goal.id, message: `Milestone: ${m.title}`, icon: 'emoji_events', icon_bg: 'bg-primary-container', icon_color: 'text-on-primary-container' });
+    showToast(complete ? 'Milestone reached!' : 'Reopened');
+    renderContent();
+  }
+
+  async function deleteMilestone(id) {
+    goal.milestones = goal.milestones.filter(m => m.id !== id);
+    await API.del(`/api/milestones/${id}`);
+    renderContent(); showToast('Milestone removed');
+  }
+
+  // History log modal
+  document.getElementById('log-history-btn').onclick = () => {
+    document.getElementById('h-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('h-unit').textContent = `(${goal?.unit || 'units'})`;
+    openModal('history-modal');
+  };
+  document.getElementById('save-history-btn').onclick = async () => {
+    const date  = document.getElementById('h-date').value;
+    const value = parseFloat(document.getElementById('h-value').value) || 0;
+    const notes = document.getElementById('h-notes').value;
+    await API.post(`/api/goals/${goalId}/progress`, { date, value, notes });
+    closeHistoryModal();
+    document.getElementById('h-value').value = '';
+    document.getElementById('h-notes').value = '';
+    goal = await API.get(`/api/goals/${goalId}`);
+    renderContent(); showToast('Entry logged');
+  };
+
+  // Add task
+  document.getElementById('save-task-btn').onclick = async () => {
+    const title = document.getElementById('task-title').value.trim();
+    if (!title) return;
+    const task = await API.post(`/api/goals/${goalId}/tasks`, {
+      title,
+      task_category: document.getElementById('task-category').value || 'General',
+      priority: document.getElementById('task-priority').value
+    });
+    goal.tasks.push(task);
+    closeModal('task-modal');
+    document.getElementById('task-title').value = '';
+    document.getElementById('task-category').value = '';
+    renderContent(); showToast('Task added');
+  };
+
+  // Add milestone
+  document.getElementById('save-milestone-btn').onclick = async () => {
+    const title = document.getElementById('milestone-title').value.trim();
+    if (!title) return;
+    const m = await API.post(`/api/goals/${goalId}/milestones`, {
+      title, target_date: document.getElementById('milestone-date').value || null
+    });
+    goal.milestones.push(m);
+    closeModal('milestone-modal');
+    document.getElementById('milestone-title').value = '';
+    document.getElementById('milestone-date').value = '';
+    renderContent(); showToast('Milestone added');
+  };
+
+  // Delete goal
+  document.getElementById('delete-goal-btn').onclick = async () => {
+    const ok = await showConfirm(`Delete "${goal?.title}"? All progress will be lost.`);
+    if (!ok) return;
+    await API.del(`/api/goals/${goalId}`);
+    showToast('Goal deleted');
+    setTimeout(() => window.location.href = '/goals.html', 800);
+  };
+
+  // Enter on modals
+  ['task-title','milestone-title'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        if (id === 'task-title') document.getElementById('save-task-btn').click();
+        else document.getElementById('save-milestone-btn').click();
+      }
+    });
+  });
+
+  async function loadGoal() {
+    goal = await API.get(`/api/goals/${goalId}`);
+    document.getElementById('page-title').textContent = goal.title;
+    renderContent();
+  }
+  loadGoal().catch(console.error);
+</script>
+</body>
+</html>

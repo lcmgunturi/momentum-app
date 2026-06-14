@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create New Goal | Momentum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  .step-panel { transition: opacity .25s ease, transform .25s ease; }
+  .step-panel.entering { animation: slideIn .25s ease forwards; }
+  @keyframes slideIn { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:translateX(0)} }
+</style>
+<script id="tailwind-config">
+  tailwind.config={darkMode:"class",theme:{extend:{
+    colors:{"tertiary-container":"#394543","on-tertiary-fixed-variant":"#3d4947","error":"#ba1a1a","on-primary-fixed-variant":"#3b35a7","surface":"#f8f9ff","inverse-primary":"#c3c0ff","on-error":"#ffffff","on-tertiary-fixed":"#121e1c","on-secondary-fixed-variant":"#005049","surface-tint":"#544fc0","on-surface-variant":"#464553","primary-fixed-dim":"#c3c0ff","primary-fixed":"#e2dfff","surface-container":"#e5eeff","background":"#f8f9ff","on-primary":"#ffffff","tertiary-fixed-dim":"#bcc9c6","inverse-surface":"#213145","outline-variant":"#c8c4d5","on-secondary-container":"#006f66","outline":"#777584","surface-dim":"#cbdbf5","secondary-container":"#86f2e4","secondary-fixed":"#89f5e7","surface-container-low":"#eff4ff","error-container":"#ffdad6","tertiary-fixed":"#d8e5e2","secondary-fixed-dim":"#6bd8cb","on-primary-container":"#a9a7ff","surface-container-lowest":"#ffffff","on-surface":"#0b1c30","surface-variant":"#d3e4fe","surface-container-highest":"#d3e4fe","on-background":"#0b1c30","on-error-container":"#93000a","secondary":"#006a61","primary":"#1f108e","tertiary":"#232f2d","surface-bright":"#f8f9ff","on-secondary":"#ffffff","surface-container-high":"#dce9ff","on-tertiary":"#ffffff","on-secondary-fixed":"#00201d","inverse-on-surface":"#eaf1ff","primary-container":"#3730a3","on-primary-fixed":"#0f0069","on-tertiary-container":"#a5b2af"},
+    borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","full":"9999px"},
+    spacing:{"margin-mobile":"20px","xs":"4px","xl":"32px","lg":"24px","margin-desktop":"40px","gutter":"16px","sm":"8px","md":"16px","base":"4px"},
+    fontFamily:{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"label-sm":["Inter"]},
+    fontSize:{"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-md":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["12px",{"lineHeight":"16px","fontWeight":"500"}]}
+  }}}
+</script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex">
+
+<!-- Side Nav -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant/60 py-lg z-50">
+  <div id="sidebar-content"></div>
+</aside>
+
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+
+  <!-- Top Nav -->
+  <header class="flex items-center gap-sm px-5 md:px-10 w-full border-b border-outline-variant/60 bg-surface/90 backdrop-blur-sm h-14 sticky top-0 z-40">
+    <a href="/goals.html" class="p-[6px] hover:bg-surface-container-high rounded-lg transition-colors text-on-surface-variant">
+      <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+    </a>
+    <h2 class="font-semibold text-base text-on-surface">New Goal</h2>
+    <!-- Step indicator in header -->
+    <div class="ml-auto flex items-center gap-[6px]">
+      <div id="hd-dot-1" class="w-2 h-2 rounded-full bg-primary transition-all"></div>
+      <div id="hd-dot-2" class="w-2 h-2 rounded-full bg-outline-variant transition-all"></div>
+      <div id="hd-dot-3" class="w-2 h-2 rounded-full bg-outline-variant transition-all"></div>
+    </div>
+  </header>
+
+  <!-- Content: side-by-side on md+ -->
+  <div class="flex-1 flex flex-col lg:flex-row">
+
+    <!-- Form panel -->
+    <div class="flex-1 p-5 md:p-10 flex flex-col">
+
+      <!-- Step label -->
+      <p id="step-label" class="text-[12px] font-semibold text-on-surface-variant uppercase tracking-widest mb-1">Step 1 of 3</p>
+      <h3 id="step-heading" class="text-xl font-bold text-on-surface mb-6">Define your goal</h3>
+
+      <form id="goal-form" onsubmit="return false;" class="flex-1 flex flex-col gap-0">
+
+        <!-- ── STEP 1: Name + Category + Target ── -->
+        <div id="step-1" class="step-panel space-y-5">
+          <div>
+            <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Goal name <span class="text-error">*</span></label>
+            <input id="goal-title" type="text" placeholder="e.g. Read 24 books this year"
+              class="w-full bg-white border border-outline-variant rounded-xl p-[13px] text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+              oninput="updatePreview()"/>
+          </div>
+          <div>
+            <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Description <span class="text-on-surface-variant font-normal">(optional)</span></label>
+            <input id="goal-desc" type="text" placeholder="One-liner about this goal"
+              class="w-full bg-white border border-outline-variant rounded-xl p-[13px] text-sm outline-none focus:ring-2 focus:ring-primary transition-all"/>
+          </div>
+          <!-- Target inline -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Target <span class="text-error">*</span></label>
+              <input id="goal-target" type="number" min="1" placeholder="100"
+                class="w-full bg-white border border-outline-variant rounded-xl p-[13px] text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+                oninput="updatePreview()"/>
+            </div>
+            <div>
+              <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Unit</label>
+              <input id="goal-unit" type="text" placeholder="Books, Miles, USD…"
+                class="w-full bg-white border border-outline-variant rounded-xl p-[13px] text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+                oninput="updatePreview()"/>
+            </div>
+          </div>
+          <!-- Category chips -->
+          <div>
+            <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Category</label>
+            <div class="grid grid-cols-3 gap-2" id="category-grid">
+              ${['Health','Tech','Finance','Creative','Learning','Other'].map(cat => `
+                <button class="category-chip flex flex-col items-center gap-1 py-3 px-2 rounded-xl border border-outline-variant hover:border-primary hover:bg-primary/5 transition-all text-center" data-category="${cat}" type="button">
+                  <span class="material-symbols-outlined text-[20px] text-on-surface-variant">${{Health:'fitness_center',Tech:'code',Finance:'payments',Creative:'palette',Learning:'menu_book',Other:'more_horiz'}[cat]}</span>
+                  <span class="text-[11px] font-semibold text-on-surface-variant">${cat}</span>
+                </button>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- ── STEP 2: Timeline ── -->
+        <div id="step-2" class="step-panel space-y-5 hidden">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Start date</label>
+              <input id="goal-start" type="date"
+                class="w-full bg-white border border-outline-variant rounded-xl p-[13px] text-sm outline-none focus:ring-2 focus:ring-primary"/>
+            </div>
+            <div>
+              <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Target date <span class="text-on-surface-variant font-normal">(optional)</span></label>
+              <input id="goal-date" type="date"
+                class="w-full bg-white border border-outline-variant rounded-xl p-[13px] text-sm outline-none focus:ring-2 focus:ring-primary"
+                oninput="updatePreview()"/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Tracking frequency</label>
+            <div class="grid grid-cols-3 gap-2" id="freq-grid">
+              ${['Daily Progression','Weekly Check-in','One-time Goal'].map(f => `
+                <button class="freq-chip py-3 rounded-xl border border-outline-variant text-[12px] font-semibold text-on-surface-variant hover:border-primary hover:bg-primary/5 transition-all" data-freq="${f}" type="button">${f}</button>`).join('')}
+            </div>
+          </div>
+          <!-- Milestones -->
+          <div>
+            <div class="flex items-center justify-between mb-[6px]">
+              <label class="text-[13px] font-semibold text-on-surface">Milestones <span class="text-on-surface-variant font-normal">(optional)</span></label>
+              <button type="button" onclick="addMilestone()" class="text-primary text-[12px] font-semibold hover:underline flex items-center gap-[2px]">
+                <span class="material-symbols-outlined text-[14px]">add</span> Add
+              </button>
+            </div>
+            <div id="milestone-list" class="space-y-[6px] max-h-44 overflow-y-auto"></div>
+            <p class="text-[11px] text-on-surface-variant mt-2">Break your goal into checkpoints you can celebrate.</p>
+          </div>
+        </div>
+
+        <!-- ── STEP 3: Motivation (optional) ── -->
+        <div id="step-3" class="step-panel space-y-5 hidden">
+          <div class="bg-primary/5 rounded-xl p-4 border border-primary/15 flex gap-3 items-start">
+            <span class="material-symbols-outlined text-primary text-[20px] mt-[1px]" style="font-variation-settings:'FILL' 1;">auto_awesome</span>
+            <p class="text-[13px] text-on-surface-variant leading-relaxed">A motivation statement gives you something to read on hard days. It's optional — skip it if you're ready to go.</p>
+          </div>
+          <div>
+            <label class="block text-[13px] font-semibold mb-[6px] text-on-surface">Why this goal matters to you</label>
+            <textarea id="goal-motivation" rows="4" placeholder="e.g. I want to read more to stay sharp and discover new ideas…"
+              class="w-full bg-white border border-outline-variant rounded-xl p-[13px] text-sm outline-none focus:ring-2 focus:ring-primary resize-none transition-all"></textarea>
+          </div>
+          <!-- Compact summary -->
+          <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/60 space-y-2">
+            <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Summary</p>
+            <div class="flex justify-between text-[13px]">
+              <span class="text-on-surface-variant">Goal</span>
+              <span id="sum-title" class="font-semibold text-on-surface text-right max-w-[200px] truncate">—</span>
+            </div>
+            <div class="flex justify-between text-[13px]">
+              <span class="text-on-surface-variant">Target</span>
+              <span id="sum-target" class="font-semibold text-on-surface">—</span>
+            </div>
+            <div class="flex justify-between text-[13px]">
+              <span class="text-on-surface-variant">Deadline</span>
+              <span id="sum-date" class="font-semibold text-on-surface">—</span>
+            </div>
+            <div class="flex justify-between text-[13px]">
+              <span class="text-on-surface-variant">Category</span>
+              <span id="sum-cat" class="font-semibold text-on-surface">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nav buttons -->
+        <div class="mt-auto pt-6 flex items-center gap-3">
+          <button id="back-btn" type="button" onclick="prevStep()"
+            class="hidden px-5 py-[11px] rounded-xl border border-outline-variant font-label-md text-[13px] text-on-surface-variant hover:bg-surface-container-high transition-colors">
+            Back
+          </button>
+          <button id="skip-btn" type="button" onclick="skipStep()"
+            class="hidden px-5 py-[11px] rounded-xl font-label-md text-[13px] text-on-surface-variant hover:underline transition-colors ml-auto">
+            Skip
+          </button>
+          <button id="next-btn" type="button" onclick="nextStep()"
+            class="ml-auto flex items-center gap-xs bg-primary text-on-primary px-6 py-[11px] rounded-xl font-label-md text-[13px] shadow-sm hover:brightness-110 active:scale-[0.97] transition-all">
+            Next <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </button>
+          <button id="create-btn" type="button" onclick="createGoal()"
+            class="hidden ml-auto flex items-center gap-xs bg-secondary text-on-secondary px-6 py-[11px] rounded-xl font-label-md text-[13px] shadow-sm hover:brightness-110 active:scale-[0.97] transition-all">
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1;">check_circle</span> Create Goal
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Live preview panel (desktop only) -->
+    <div class="hidden lg:flex flex-col w-[360px] shrink-0 border-l border-outline-variant/60 p-8 bg-surface-container-low">
+      <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Preview</p>
+      <div id="goal-preview" class="rounded-2xl bg-white shadow-sm border-l-[4px] border-l-outline-variant overflow-hidden">
+        <div class="p-5">
+          <div class="flex items-start gap-3 mb-4">
+            <div id="prev-icon-wrap" class="w-10 h-10 bg-surface-container rounded-xl flex items-center justify-center shrink-0">
+              <span id="prev-icon" class="material-symbols-outlined text-[18px] text-on-surface-variant" style="font-variation-settings:'FILL' 1;">flag</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-[2px] rounded-full text-[10px] font-semibold bg-primary/10 text-primary">In Progress</span>
+              </div>
+              <h4 id="prev-title" class="font-semibold text-[15px] text-on-surface leading-tight">Your goal name</h4>
+              <p id="prev-desc" class="text-[12px] text-on-surface-variant mt-[2px] line-clamp-1 italic opacity-50">Add a description…</p>
+            </div>
+          </div>
+          <div class="mb-1 flex justify-between items-baseline">
+            <span id="prev-progress-text" class="text-[12px] text-on-surface-variant">0 / — </span>
+            <span class="text-[22px] font-bold text-on-surface tabular-nums">0%</span>
+          </div>
+          <div class="w-full bg-surface-container-high h-[6px] rounded-full overflow-hidden">
+            <div class="bg-secondary h-full rounded-full w-0"></div>
+          </div>
+          <p id="prev-date" class="text-[11px] text-on-surface-variant mt-3"></p>
+        </div>
+      </div>
+      <p class="mt-6 text-[12px] text-on-surface-variant leading-relaxed opacity-60 italic">"A goal without a plan is just a wish."</p>
+    </div>
+
+  </div>
+</main>
+
+<script src="/js/api.js"></script>
+<script>
+  document.getElementById('sidebar-content').innerHTML = sidebarHTML('goals');
+
+  let currentStep = 1;
+  const totalSteps = 3;
+  let selectedCategory = '';
+  let selectedFreq = 'Daily Progression';
+
+  // Defaults
+  document.getElementById('goal-start').value = new Date().toISOString().split('T')[0];
+  document.querySelector('.freq-chip').classList.add('border-primary', 'bg-primary/5', 'text-primary');
+
+  const stepHeadings = ['Define your goal', 'Set your timeline', 'What drives you?'];
+  const stepLabels   = ['Step 1 of 3', 'Step 2 of 3', 'Step 3 of 3 — optional'];
+
+  function showStep(n) {
+    for (let i = 1; i <= 3; i++) {
+      const el = document.getElementById(`step-${i}`);
+      if (i === n) {
+        el.classList.remove('hidden');
+        el.classList.add('entering');
+        setTimeout(() => el.classList.remove('entering'), 300);
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+    document.getElementById('step-label').textContent = stepLabels[n - 1];
+    document.getElementById('step-heading').textContent = stepHeadings[n - 1];
+
+    // Header dots
+    for (let i = 1; i <= 3; i++) {
+      const dot = document.getElementById(`hd-dot-${i}`);
+      dot.className = `w-2 h-2 rounded-full transition-all ${i <= n ? 'bg-primary' : 'bg-outline-variant'}`;
+    }
+
+    document.getElementById('back-btn').classList.toggle('hidden', n === 1);
+    document.getElementById('next-btn').classList.toggle('hidden', n === 3);
+    document.getElementById('create-btn').classList.toggle('hidden', n !== 3);
+    document.getElementById('skip-btn').classList.toggle('hidden', n !== 3);
+    currentStep = n;
+  }
+
+  function nextStep() {
+    if (currentStep === 1) {
+      if (!document.getElementById('goal-title').value.trim()) {
+        showToast('Please enter a goal name', 'error'); return;
+      }
+      if (!document.getElementById('goal-target').value) {
+        showToast('Please enter a target value', 'error'); return;
+      }
+    }
+    if (currentStep < totalSteps) showStep(currentStep + 1);
+    if (currentStep === 3) updateSummary();
+  }
+
+  function prevStep() {
+    if (currentStep > 1) showStep(currentStep - 1);
+  }
+
+  function skipStep() { createGoal(); }
+
+  function updateSummary() {
+    document.getElementById('sum-title').textContent  = document.getElementById('goal-title').value || '—';
+    document.getElementById('sum-target').textContent = document.getElementById('goal-target').value
+      ? `${document.getElementById('goal-target').value} ${document.getElementById('goal-unit').value || ''}` : '—';
+    document.getElementById('sum-date').textContent   = document.getElementById('goal-date').value
+      ? formatDate(document.getElementById('goal-date').value) : 'No deadline';
+    document.getElementById('sum-cat').textContent    = selectedCategory || 'Other';
+  }
+
+  function updatePreview() {
+    const title = document.getElementById('goal-title').value || 'Your goal name';
+    const desc  = document.getElementById('goal-desc').value;
+    const tv    = document.getElementById('goal-target').value;
+    const unit  = document.getElementById('goal-unit').value;
+    const date  = document.getElementById('goal-date')?.value;
+
+    document.getElementById('prev-title').textContent = title;
+    document.getElementById('prev-desc').textContent = desc || 'Add a description…';
+    document.getElementById('prev-desc').style.opacity = desc ? '1' : '0.4';
+    document.getElementById('prev-progress-text').textContent = tv ? `0 / ${tv} ${unit}` : '0 / —';
+    document.getElementById('prev-date').textContent = date ? `Due ${formatDate(date)}` : '';
+
+    // Category accent on preview card
+    const acc = categoryAccent[selectedCategory] || 'border-l-outline-variant';
+    const prev = document.getElementById('goal-preview');
+    prev.className = 'rounded-2xl bg-white shadow-sm overflow-hidden border-l-[4px] ' + acc.replace('border-l-[4px] ','');
+
+    // Icon
+    const cc = categoryColors[selectedCategory] || categoryColors.Other;
+    document.getElementById('prev-icon-wrap').className = `w-10 h-10 ${cc.bg} rounded-xl flex items-center justify-center shrink-0`;
+    document.getElementById('prev-icon').className = `material-symbols-outlined text-[18px] ${cc.text}`;
+    document.getElementById('prev-icon').style.fontVariationSettings = "'FILL' 1";
+    document.getElementById('prev-icon').textContent = categoryIcons[selectedCategory] || 'flag';
+  }
+
+  async function createGoal() {
+    const title = document.getElementById('goal-title').value.trim();
+    if (!title) { showToast('Goal name is required', 'error'); showStep(1); return; }
+
+    const milestones = Array.from(document.querySelectorAll('#milestone-list input'))
+      .map(i => i.value.trim()).filter(Boolean);
+
+    const btn = document.getElementById('create-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px]">refresh</span> Creating…';
+
+    try {
+      const goal = await API.post('/api/goals', {
+        title,
+        description: document.getElementById('goal-desc').value,
+        category: selectedCategory || 'Other',
+        target_value: parseFloat(document.getElementById('goal-target').value) || 100,
+        unit: document.getElementById('goal-unit').value || '%',
+        start_date: document.getElementById('goal-start').value,
+        target_date: document.getElementById('goal-date').value || null,
+        motivation: document.getElementById('goal-motivation').value,
+        frequency: selectedFreq,
+        icon: categoryIcons[selectedCategory] || 'flag'
+      });
+      for (const ms of milestones) {
+        await API.post(`/api/goals/${goal.id}/milestones`, { title: ms });
+      }
+      showToast('Goal created!');
+      setTimeout(() => window.location.href = `/goal-detail.html?id=${goal.id}`, 700);
+    } catch {
+      showToast('Failed to create goal', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px]" style="font-variation-settings:\'FILL\' 1;">check_circle</span> Create Goal';
+    }
+  }
+
+  function addMilestone() {
+    const list = document.getElementById('milestone-list');
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-sm bg-white border border-outline-variant rounded-xl px-sm py-[6px]';
+    div.innerHTML = `
+      <span class="material-symbols-outlined text-[16px] text-on-surface-variant shrink-0">radio_button_unchecked</span>
+      <input type="text" placeholder="Milestone…" class="flex-1 bg-transparent border-none outline-none text-sm p-0"/>
+      <button type="button" onclick="this.parentElement.remove()" class="text-on-surface-variant hover:text-error transition-colors shrink-0">
+        <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>`;
+    list.appendChild(div);
+    div.querySelector('input').focus();
+  }
+
+  // Category chips
+  document.getElementById('category-grid').addEventListener('click', e => {
+    const chip = e.target.closest('.category-chip');
+    if (!chip) return;
+    document.querySelectorAll('.category-chip').forEach(c => {
+      c.classList.remove('border-primary', 'bg-primary/5', 'text-primary');
+      c.querySelector('.material-symbols-outlined')?.classList.remove('text-primary');
+      c.querySelector('span:last-child')?.classList.remove('text-primary');
+    });
+    chip.classList.add('border-primary', 'bg-primary/5');
+    chip.querySelectorAll('span').forEach(s => s.classList.add('text-primary'));
+    selectedCategory = chip.dataset.category;
+    updatePreview();
+  });
+
+  // Frequency chips
+  document.getElementById('freq-grid').addEventListener('click', e => {
+    const chip = e.target.closest('.freq-chip');
+    if (!chip) return;
+    document.querySelectorAll('.freq-chip').forEach(c => c.classList.remove('border-primary', 'bg-primary/5', 'text-primary'));
+    chip.classList.add('border-primary', 'bg-primary/5', 'text-primary');
+    selectedFreq = chip.dataset.freq;
+  });
+
+  // Enter to advance
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'BUTTON') {
+      if (currentStep < totalSteps) nextStep();
+    }
+  });
+
+  showStep(1);
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "momentum-goal-tracker",
+  "version": "1.0.0",
+  "description": "Personal Goal Tracker - Focused & Calm",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --no-warnings=ExperimentalWarning server.js",
+    "dev": "node --no-warnings=ExperimentalWarning server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "express": "^4.18.3"
+  }
+}
