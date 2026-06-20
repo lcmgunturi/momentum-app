@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Momentum — Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up { animation: fadeUp .35s ease both; }
+</style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode:"class",
+    theme:{ extend:{
+      colors:{"error":"#ba1a1a","surface":"#f8f9ff","on-surface-variant":"#464553","surface-container":"#e5eeff","background":"#f8f9ff","on-primary":"#ffffff","surface-container-low":"#eff4ff","secondary-container":"#86f2e4","on-secondary-container":"#006f66","outline-variant":"#c8c4d5","outline":"#777584","on-surface":"#0b1c30","surface-variant":"#d3e4fe","secondary":"#006a61","primary":"#1f108e","primary-container":"#3730a3","on-primary-container":"#a9a7ff","surface-container-high":"#dce9ff","error-container":"#ffdad6","on-error-container":"#93000a","on-error":"#ffffff"},
+      borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","3xl":"1.5rem","full":"9999px"},
+      spacing:{"xs":"4px","xl":"32px","lg":"24px","gutter":"16px","sm":"8px","md":"16px"},
+      fontFamily:{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Inter"],"body-md":["Inter"],"label-sm":["Inter"]},
+      fontSize:{"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-md":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["12px",{"lineHeight":"16px","fontWeight":"500"}]}
+    }}
+  }
+</script>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex items-center justify-center px-md">
+
+<div class="w-full max-w-sm fade-up">
+  <!-- Brand -->
+  <div class="flex flex-col items-center mb-xl">
+    <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center mb-md shadow-sm">
+      <span class="material-symbols-outlined text-white text-[26px]" style="font-variation-settings:'FILL' 1;">bolt</span>
+    </div>
+    <h1 class="font-headline-lg text-primary">Momentum</h1>
+    <p class="text-label-sm text-on-surface-variant mt-1">Stay focused. Track progress.</p>
+  </div>
+
+  <div class="bg-surface-container-low border border-outline-variant/60 rounded-3xl p-xl shadow-sm">
+    <h2 id="form-title" class="font-headline-md text-[20px] font-bold mb-1">Welcome back</h2>
+    <p id="form-sub" class="text-label-sm text-on-surface-variant mb-lg">Sign in to continue to your goals.</p>
+
+    <form id="auth-form" class="space-y-md">
+      <div>
+        <label class="block text-label-sm text-on-surface-variant mb-1" for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" required
+          class="w-full px-md py-[10px] bg-surface rounded-xl border border-outline-variant focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+          placeholder="you@example.com"/>
+      </div>
+      <div>
+        <label class="block text-label-sm text-on-surface-variant mb-1" for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required minlength="6"
+          class="w-full px-md py-[10px] bg-surface rounded-xl border border-outline-variant focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+          placeholder="••••••••"/>
+      </div>
+
+      <p id="auth-error" class="hidden text-label-sm text-error bg-error-container/50 rounded-lg px-md py-sm"></p>
+
+      <button id="submit-btn" type="submit"
+        class="w-full py-[11px] bg-primary text-on-primary rounded-xl font-label-md text-sm shadow-sm hover:brightness-110 active:scale-[0.99] transition-all disabled:opacity-60">
+        Sign In
+      </button>
+    </form>
+
+    <p class="text-center text-label-sm text-on-surface-variant mt-lg">
+      <span id="toggle-text">Don't have an account?</span>
+      <button id="toggle-btn" class="text-primary font-semibold hover:underline ml-1">Sign up</button>
+    </p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="/js/firebase.js"></script>
+<script>
+  let mode = 'signin'; // or 'signup'
+
+  const els = {
+    title: document.getElementById('form-title'),
+    sub: document.getElementById('form-sub'),
+    submit: document.getElementById('submit-btn'),
+    toggleText: document.getElementById('toggle-text'),
+    toggleBtn: document.getElementById('toggle-btn'),
+    error: document.getElementById('auth-error'),
+    email: document.getElementById('email'),
+    password: document.getElementById('password'),
+    form: document.getElementById('auth-form'),
+  };
+
+  function setMode(next) {
+    mode = next;
+    const signup = mode === 'signup';
+    els.title.textContent = signup ? 'Create your account' : 'Welcome back';
+    els.sub.textContent = signup ? 'Start tracking your goals in minutes.' : 'Sign in to continue to your goals.';
+    els.submit.textContent = signup ? 'Sign Up' : 'Sign In';
+    els.toggleText.textContent = signup ? 'Already have an account?' : "Don't have an account?";
+    els.toggleBtn.textContent = signup ? 'Sign in' : 'Sign up';
+    els.password.setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
+    hideError();
+  }
+
+  function showError(msg) { els.error.textContent = msg; els.error.classList.remove('hidden'); }
+  function hideError() { els.error.classList.add('hidden'); }
+
+  els.toggleBtn.addEventListener('click', () => setMode(mode === 'signin' ? 'signup' : 'signin'));
+
+  const friendly = {
+    'auth/invalid-email': 'That email address looks invalid.',
+    'auth/missing-password': 'Please enter a password.',
+    'auth/weak-password': 'Password should be at least 6 characters.',
+    'auth/email-already-in-use': 'An account already exists for that email.',
+    'auth/invalid-credential': 'Incorrect email or password.',
+    'auth/wrong-password': 'Incorrect email or password.',
+    'auth/user-not-found': 'No account found for that email.',
+    'auth/too-many-requests': 'Too many attempts. Please try again later.',
+    'auth/operation-not-allowed': 'Email/password sign-in is not enabled in Firebase.',
+  };
+
+  els.form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+    const email = els.email.value.trim();
+    const password = els.password.value;
+    els.submit.disabled = true;
+    const original = els.submit.textContent;
+    els.submit.textContent = mode === 'signup' ? 'Creating account…' : 'Signing in…';
+    try {
+      if (mode === 'signup') {
+        await auth.createUserWithEmailAndPassword(email, password);
+      } else {
+        await auth.signInWithEmailAndPassword(email, password);
+      }
+      // firebase.js onAuthStateChanged redirects to the dashboard on success.
+    } catch (err) {
+      showError(friendly[err.code] || err.message || 'Something went wrong.');
+      els.submit.disabled = false;
+      els.submit.textContent = original;
+    }
+  });
+</script>
+</body>
+</html>
